@@ -8,5 +8,8 @@ module Legit
     autoload :ArrayValue, 'legit/values/array_value'
     autoload :StringValue, 'legit/values/string_value'
   end
-end
 
+  module Forms
+    autoload :Form, 'legit/forms/form'
+  end
+end
