@@ -9,6 +9,7 @@ module Legit
         @strip = opts.delete(:strip) { false }
         @downcase = opts.delete(:downcase) { false }
         @upcase = opts.delete(:upcase) { false }
+        @regexp = opts.delete(:regexp)
 
         super
       end
@@ -22,10 +23,12 @@ module Legit
       end
 
       def validate(value)
-        super
+        val = validateWith(super, :check_regexp)
       end
 
       private
+
+      attr_reader :regexp
 
       def strip?
         @strip
@@ -57,6 +60,12 @@ module Legit
 
       def parse_upcase(value)
         upcase? ? Success(Just(value.upcase)) : Success(Just(value))
+      end
+
+      def check_regexp(value)
+        return Success(Just(value)) if regexp.nil?
+
+        regexp.match(value) ? Success(Just(value)) : Failure('does not match allowed format')
       end
 
     end

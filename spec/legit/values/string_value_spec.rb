@@ -81,4 +81,26 @@ describe Legit::Values::StringValue do
     s.parse_and_validate.should be_success_just('FOO$B4RBAZ')
   end
 
+  context 'matches regexp' do
+
+    it 'valid value' do
+      s = Legit::Values::StringValue.new(regexp: /\A[a-e]+\z/)
+      s.user_value = 'abcabc'
+      s.parse_and_validate.should be_success_just('abcabc')
+    end
+
+    it 'invalid value' do
+      s = Legit::Values::StringValue.new(regexp: /\A[a-e]+\z/)
+      s.user_value = 'abcxyz'
+      s.parse_and_validate.should be_failure('does not match allowed format')
+    end
+
+    it 'after other parsers' do
+      s = Legit::Values::StringValue.new(downcase: true, regexp: /\A[a-e]+\z/)
+      s.user_value = 'ABC'
+      s.parse_and_validate.should be_success_just('abc')
+    end
+
+  end
+
 end
