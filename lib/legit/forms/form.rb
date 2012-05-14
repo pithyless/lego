@@ -16,14 +16,6 @@ module Legit
         @valid = errors.empty?
       end
 
-      def cleaned_data
-        @cleaned_data ||= {}
-      end
-
-      def errors
-        @errors ||= {}
-      end
-
       def validate_before_fields
         [{}, {}]
       end
@@ -62,13 +54,12 @@ module Legit
         if errors.empty?
           vals, errs = send(sym)
           if errs.empty?
-            @cleaned_data, @errors = cleaned_data.merge(vals), {}
+            @clean_data, @errors = clean_data.merge(vals), {}
           else
-            @cleaned_data, @errors = {}, errors.merge(errs)
+            @clean_data, @errors = {}, errors.merge(errs)
           end
         end
       end
-
 
     end
 

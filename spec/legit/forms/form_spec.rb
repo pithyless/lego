@@ -11,22 +11,21 @@ class MyForm < Legit::Forms::Form
   end
 end
 
-
 describe 'Form' do
 
   it 'is unbound without data' do
     form = MyForm.new
     form.raw_data.should == {}
     form.should_not be_valid
-    form.cleaned_data.should == {}
+    form.clean_data.should == {}
     form.errors.should == {}
   end
 
-  it 'has cleaned_data on success' do
+  it 'has clean_data on success' do
     form = MyForm.new(name: 'FoO', age: 4, tags: 'one, TWO, thrEE')
     form.raw_data.should == { name: 'FoO', age: 4, tags: 'one, TWO, thrEE' }
     form.should be_valid
-    form.cleaned_data.should == { name: 'foo', age: 4, tags: %w{one two three} }
+    form.clean_data.should == { name: 'foo', age: 4, tags: %w{one two three} }
     form.errors.should == {}
   end
 
@@ -34,7 +33,7 @@ describe 'Form' do
     form = MyForm.new(name: 'FoO', age: '0')
     form.raw_data.should == { name: 'FoO', age: '0' }
     form.should_not be_valid
-    form.cleaned_data.should == {}
+    form.clean_data.should == {}
     form.errors.should == { age: ['must be at least 1'], tags: ['is required'] }
   end
 
@@ -48,7 +47,7 @@ describe 'Form' do
 
       form.raw_data.should == { name: 'foo', age: 0, tags: 'one, two' }
       form.should_not be_valid
-      form.cleaned_data.should == {}
+      form.clean_data.should == {}
       form.errors.should == { last_name: ['invalid'] }
     end
 
@@ -60,11 +59,11 @@ describe 'Form' do
 
       form.raw_data.should == { name: 'foo', age: 0, tags: 'one, two' }
       form.should_not be_valid
-      form.cleaned_data.should == {}
+      form.clean_data.should == {}
       form.errors.should == { age: ['must be at least 1'] }
     end
 
-    it 'merges cleaned_data if everything valid' do
+    it 'merges clean_data if everything valid' do
       form = MyForm.new(name: 'foo', age: 10, tags: 'one, two')
       def form.validate_before_fields
         return {last_name: 'Kennedy'}, {}
@@ -72,7 +71,7 @@ describe 'Form' do
 
       form.raw_data.should == { name: 'foo', age: 10, tags: 'one, two' }
       form.should be_valid
-      form.cleaned_data.should == { name: 'foo', age: 10, tags: %w{one two}, last_name: 'Kennedy'}
+      form.clean_data.should == { name: 'foo', age: 10, tags: %w{one two}, last_name: 'Kennedy'}
       form.errors.should == {}
     end
 
@@ -89,7 +88,7 @@ describe 'Form' do
 
       form.raw_data.should == { name: 'foo', age: 0, tags: 'one, two' }
       form.should_not be_valid
-      form.cleaned_data.should == {}
+      form.clean_data.should == {}
       form.errors.should == { age: ['must be at least 1'] }
     end
 
@@ -101,11 +100,11 @@ describe 'Form' do
 
       form.raw_data.should == { name: 'foo', age: 10, tags: 'one, two' }
       form.should_not be_valid
-      form.cleaned_data.should == {}
+      form.clean_data.should == {}
       form.errors.should == { city: ['missing'] }
     end
 
-    it 'merges cleaned_data if everything valid' do
+    it 'merges clean_data if everything valid' do
       form = MyForm.new(name: 'foo', age: 10, tags: 'one, two')
       def form.validate_before_fields
         return {city: 'Chicago'}, {}
@@ -113,11 +112,10 @@ describe 'Form' do
 
       form.raw_data.should == { name: 'foo', age: 10, tags: 'one, two' }
       form.should be_valid
-      form.cleaned_data.should == { name: 'foo', age: 10, tags: %w{one two}, city: 'Chicago'}
+      form.clean_data.should == { name: 'foo', age: 10, tags: %w{one two}, city: 'Chicago'}
       form.errors.should == {}
     end
 
   end
-
 
 end
