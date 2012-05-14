@@ -69,12 +69,12 @@ describe Legit::Values::IntegerValue do
       Legit::Values::IntegerValue.new({min: 10, required: false})
     end
 
-    it 'within limit' do
+    it 'outside limit' do
       subject.user_value = '5'
       subject.parse_and_validate.should be_failure('must be at least 10')
     end
 
-    it 'outside limit' do
+    it 'within limit' do
       subject.user_value = 20
       subject.parse_and_validate.should be_success_just(20)
     end
@@ -90,12 +90,12 @@ describe Legit::Values::IntegerValue do
       Legit::Values::IntegerValue.new({max: 50, required: false})
     end
 
-    it 'within limit' do
+    it 'outside limit' do
       subject.user_value = 55
       subject.parse_and_validate.should be_failure('must be at most 50')
     end
 
-    it 'outside limit' do
+    it 'within limit' do
       subject.user_value = 50
       subject.parse_and_validate.should be_success_just(50)
     end
