@@ -6,9 +6,9 @@ module Legit
       public_class_method :new
 
       def initialize(opts={})
-        @strip = opts.delete(:strip) || false
-        @downcase = opts.delete(:downcase) || false
-        @upcase = opts.delete(:upcase) || false
+        @strip = opts.delete(:strip) { false }
+        @downcase = opts.delete(:downcase) { false }
+        @upcase = opts.delete(:upcase) { false }
 
         super
       end

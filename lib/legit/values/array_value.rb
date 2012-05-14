@@ -7,7 +7,7 @@ module Legit
 
       def initialize(opts={})
         @string_split = opts.delete(:split)
-        @element_parser = opts.delete(:element) or fail 'Missing :element parser'
+        @element_parser = opts.delete(:element) { fail 'Missing :element parser' }
         super
       end
 

@@ -7,7 +7,8 @@ module Legit
       attr_reader :user_value
 
       def initialize(opts={})
-        @required = opts.fetch(:required, true)
+        @required = opts.delete(:required) { true }
+        fail "Unhandled options: #{opts.inspect}" unless opts.empty?
       end
 
       def value
