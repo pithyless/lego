@@ -38,4 +38,86 @@ describe 'Form' do
     form.errors.should == { age: ['must be at least 1'], tags: ['is required'] }
   end
 
+  context 'validate_before_fields' do
+
+    it 'does not validate fields if before_fields invalid' do
+      form = MyForm.new(name: 'foo', age: 0, tags: 'one, two')
+      def form.validate_before_fields
+        return {last_name: 'Kennedy'}, {last_name: ['invalid']}
+      end
+
+      form.raw_data.should == { name: 'foo', age: 0, tags: 'one, two' }
+      form.should_not be_valid
+      form.cleaned_data.should == {}
+      form.errors.should == { last_name: ['invalid'] }
+    end
+
+    it 'validates fields if before_fields valid' do
+      form = MyForm.new(name: 'foo', age: 0, tags: 'one, two')
+      def form.validate_before_fields
+        return {last_name: 'Kennedy'}, {}
+      end
+
+      form.raw_data.should == { name: 'foo', age: 0, tags: 'one, two' }
+      form.should_not be_valid
+      form.cleaned_data.should == {}
+      form.errors.should == { age: ['must be at least 1'] }
+    end
+
+    it 'merges cleaned_data if everything valid' do
+      form = MyForm.new(name: 'foo', age: 10, tags: 'one, two')
+      def form.validate_before_fields
+        return {last_name: 'Kennedy'}, {}
+      end
+
+      form.raw_data.should == { name: 'foo', age: 10, tags: 'one, two' }
+      form.should be_valid
+      form.cleaned_data.should == { name: 'foo', age: 10, tags: %w{one two}, last_name: 'Kennedy'}
+      form.errors.should == {}
+    end
+
+  end
+
+
+  context 'validate_after_fields' do
+
+    it 'does not validate after_fields if fields invalid' do
+      form = MyForm.new(name: 'foo', age: 0, tags: 'one, two')
+      def form.validate_after_fields
+        return {}, {city: ['missing']}
+      end
+
+      form.raw_data.should == { name: 'foo', age: 0, tags: 'one, two' }
+      form.should_not be_valid
+      form.cleaned_data.should == {}
+      form.errors.should == { age: ['must be at least 1'] }
+    end
+
+    it 'validates after_fields if fields valid' do
+      form = MyForm.new(name: 'foo', age: 10, tags: 'one, two')
+      def form.validate_after_fields
+        return {}, {city: ['missing']}
+      end
+
+      form.raw_data.should == { name: 'foo', age: 10, tags: 'one, two' }
+      form.should_not be_valid
+      form.cleaned_data.should == {}
+      form.errors.should == { city: ['missing'] }
+    end
+
+    it 'merges cleaned_data if everything valid' do
+      form = MyForm.new(name: 'foo', age: 10, tags: 'one, two')
+      def form.validate_before_fields
+        return {city: 'Chicago'}, {}
+      end
+
+      form.raw_data.should == { name: 'foo', age: 10, tags: 'one, two' }
+      form.should be_valid
+      form.cleaned_data.should == { name: 'foo', age: 10, tags: %w{one two}, city: 'Chicago'}
+      form.errors.should == {}
+    end
+
+  end
+
+
 end

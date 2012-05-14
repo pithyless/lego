@@ -24,8 +24,19 @@ module Legit
         @errors ||= {}
       end
 
-      def validate
+      def validate_before_fields
+        [{}, {}]
+      end
+
+      def validate_after_fields
+        [{}, {}]
+      end
+
+      private
+
+      def validate_fields
         vals, errs = {}, {}
+
         fields.each do |attr, field|
           field.user_value = raw_data[attr]
           res = field.parse_and_validate
@@ -38,12 +49,26 @@ module Legit
           end
         end
 
-        if errs.empty?
-          @cleaned_data, @errors = vals, {}
-        else
-          @cleaned_data, @errors = {}, errs
+        [vals, errs]
+      end
+
+      def validate
+        validate_helper(:validate_before_fields)
+        validate_helper(:validate_fields)
+        validate_helper(:validate_after_fields)
+      end
+
+      def validate_helper(sym)
+        if errors.empty?
+          vals, errs = send(sym)
+          if errs.empty?
+            @cleaned_data, @errors = cleaned_data.merge(vals), {}
+          else
+            @cleaned_data, @errors = {}, errors.merge(errs)
+          end
         end
       end
+
 
     end
 
