@@ -3,10 +3,11 @@ require_relative 'maybe'
 
 module Legit
   module Values
-    autoload :Value, 'legit/values/value'
+    autoload :Value,        'legit/values/value'
+    autoload :ArrayValue,   'legit/values/array_value'
+    autoload :BooleanValue, 'legit/values/boolean_value'
     autoload :IntegerValue, 'legit/values/integer_value'
-    autoload :ArrayValue, 'legit/values/array_value'
-    autoload :StringValue, 'legit/values/string_value'
+    autoload :StringValue,  'legit/values/string_value'
   end
 
   module Forms
