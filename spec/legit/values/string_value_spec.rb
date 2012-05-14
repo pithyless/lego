@@ -103,4 +103,49 @@ describe Legit::Values::StringValue do
 
   end
 
+  context 'minimum length' do
+
+    subject do
+      Legit::Values::StringValue.new({min_length: 5, required: false})
+    end
+
+    it 'outside limit' do
+      subject.user_value = '1234'
+      subject.parse_and_validate.should be_failure('must be at least 5 characters')
+    end
+
+    it 'within limit' do
+      subject.user_value = '12345'
+      subject.parse_and_validate.should be_success_just('12345')
+    end
+
+    it 'missing is OK' do
+      subject.user_value = ''
+      subject.parse_and_validate.should be_success_nothing
+    end
+
+  end
+
+  context 'maximum length' do
+
+   subject do
+      Legit::Values::StringValue.new({max_length: 10, required: false})
+    end
+
+    it 'outside limit' do
+      subject.user_value = '12345678901'
+      subject.parse_and_validate.should be_failure('must be at most 10 characters')
+    end
+
+    it 'within limit' do
+      subject.user_value = '1234567890'
+      subject.parse_and_validate.should be_success_just('1234567890')
+    end
+
+    it 'missing is OK' do
+      subject.user_value = ''
+      subject.parse_and_validate.should be_success_nothing
+    end
+  end
+
 end

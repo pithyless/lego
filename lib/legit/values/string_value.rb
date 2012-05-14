@@ -10,6 +10,8 @@ module Legit
         @downcase = opts.delete(:downcase) { false }
         @upcase = opts.delete(:upcase) { false }
         @regexp = opts.delete(:regexp)
+        @min_length = opts.delete(:min_length)
+        @max_length = opts.delete(:max_length)
 
         super
       end
@@ -24,11 +26,13 @@ module Legit
 
       def validate(value)
         val = validateWith(super, :check_regexp)
+        val = validateWith(val, :check_min_length)
+        val = validateWith(val, :check_max_length)
       end
 
       private
 
-      attr_reader :regexp
+      attr_reader :regexp, :min_length, :max_length
 
       def strip?
         @strip
@@ -67,6 +71,23 @@ module Legit
 
         regexp.match(value) ? Success(Just(value)) : Failure('does not match allowed format')
       end
+
+      def check_min_length(value)
+        if min_length and value.length < min_length
+          Failure("must be at least #{min_length} characters")
+        else
+          Success(Just(value))
+        end
+      end
+
+      def check_max_length(value)
+        if max_length and value.length > max_length
+          Failure("must be at most #{max_length} characters")
+        else
+          Success(Just(value))
+        end
+      end
+
 
     end
 
