@@ -1,5 +1,4 @@
 # -*- encoding: utf-8 -*-
-require File.expand_path('../lib/legit/version', __FILE__)
 
 Gem::Specification.new do |gem|
   gem.authors       = ["Norbert Wojtowicz"]
@@ -13,7 +12,7 @@ Gem::Specification.new do |gem|
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.name          = "legit"
   gem.require_paths = ["lib"]
-  gem.version       = Legit::VERSION
+  gem.version       = '0.0.1'
 
   gem.add_development_dependency "rake"
   gem.add_development_dependency "rspec"
