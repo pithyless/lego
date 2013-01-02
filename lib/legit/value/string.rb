@@ -1,0 +1,26 @@
+require 'active_support/core_ext/string'
+
+module Legit::Value
+  class String < Base
+
+    def initialize(opts={})
+      @opts = opts
+    end
+
+    def parsers
+      [
+       ->(v) { v.respond_to?(:to_str) ? Legit.just(v.to_str) : Legit.fail("Not a string: #{v}") },
+       ->(v) { (not allow_blank? and v.blank?) ? Legit.none : Legit.just(v) },
+       ->(v) { strip? ? Legit.just(v.strip) : Legit.just(v) }
+      ]
+    end
+
+    def allow_blank?
+      @opts.fetch(:allow_blank, true)
+    end
+
+    def strip?
+      @opts.fetch(:strip, true)
+    end
+  end
+end
