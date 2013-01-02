@@ -16,7 +16,7 @@ module Legit::Value
     end
 
     def allow_blank?
-      @opts.fetch(:allow_blank, true)
+      @opts.fetch(:allow_blank, false)
     end
 
     def strip?

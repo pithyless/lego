@@ -53,7 +53,7 @@ module Legit
       end
 
       def inspect
-        "<Legit::Either::Just #{value}>"
+        "<Legit::Either::Just '#{value}'>"
       end
     end
 
@@ -83,7 +83,7 @@ module Legit
       end
 
       def inspect
-        "<Legit::Either::Fail #{error}>"
+        "<Legit::Either::Fail '#{error}'>"
       end
     end
 
