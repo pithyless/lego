@@ -20,8 +20,8 @@ describe Legit::Value::String do
     end
 
     context 'not a string' do
-      specify { subject.parse(Date.new(2012, 12, 26)).should be_error('Not a string: 2012-12-26') }
-      specify { subject.parse(123).should be_error('Not a string: 123') }
+      specify { subject.parse(Date.new(2012, 12, 26)).should be_error('Not a string: "2012-12-26"') }
+      specify { subject.parse(123).should be_error('Not a string: "123"') }
     end
 
     context 'allow blank' do
@@ -63,6 +63,44 @@ describe Legit::Value::String do
       its(:allow_blank?){ should == false }
       its(:strip?){ should == true }
     end
+  end
 
+
+  describe '#coerce' do
+    context 'nothing' do
+      context 'default' do
+        it 'raises error' do
+          expect{ subject.coerce(nil) }.to raise_error(Legit::CoerceError, 'Missing required value')
+          expect{ subject.coerce('') }.to raise_error(Legit::CoerceError, 'Missing required value')
+          expect{ subject.coerce('  ') }.to raise_error(Legit::CoerceError, 'Missing required value')
+        end
+      end
+
+      context 'with handler' do
+        subject { Legit::Value::String.new(nothing: handler) }
+
+        context 'nil handler' do
+          let(:handler) { ->{ nil } }
+          specify { subject.coerce(nil).should be_nil }
+        end
+
+        context 'lambda handler' do
+          let(:handler) { ->{ 'missing' } }
+          specify { subject.coerce('  ').should == 'missing' }
+        end
+      end
+    end
+
+    context 'failure' do
+      it 'raises error' do
+        expect{ subject.coerce(123) }.to raise_error(Legit::CoerceError, 'Not a string: "123"')
+      end
+    end
+
+    context 'success' do
+      it 'returns string' do
+        subject.coerce('foo bar').should == 'foo bar'
+      end
+    end
   end
 end
