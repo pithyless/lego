@@ -2,8 +2,8 @@ module Legit
   class Model
     class << self
 
-      def attribute(attr, type)
-        parsers[attr.to_sym] = parser = Legit.value_parser(type)
+      def attribute(attr, type, *args)
+        parsers[attr.to_sym] = Legit.value_parser(type, *args)
       end
 
       def parsers
