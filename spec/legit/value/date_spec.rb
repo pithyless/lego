@@ -63,7 +63,7 @@ describe Legit::Value::Date do
     end
 
     context 'success' do
-      it 'returns string' do
+      it 'returns date' do
         subject.coerce(Date.new(2012, 02, 01)).should == Date.new(2012, 02, 01)
       end
     end
