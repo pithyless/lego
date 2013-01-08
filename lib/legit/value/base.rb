@@ -19,10 +19,10 @@ module Legit::Value
         resp.value
       elsif resp.error?
         raise Legit::CoerceError, resp.error
-      elsif @opts[:nothing]
-        @opts[:nothing].call
+      elsif @opts[:default]
+        @opts[:default].call
       else
-        raise Legit::CoerceError, 'Missing required value'
+        raise Legit::CoerceError, 'missing value'
       end
     end
 

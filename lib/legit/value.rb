@@ -1,3 +1,6 @@
+require 'active_support/core_ext/string'
+require 'active_support/core_ext/time/conversions'
+
 module Legit
   module Value
   end
@@ -5,3 +8,4 @@ end
 
 require_relative 'value/base'
 require_relative 'value/string'
+require_relative 'value/date'
