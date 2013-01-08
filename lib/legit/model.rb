@@ -39,6 +39,12 @@ module Legit
       hash.instance_of?(self) ? hash : self.new(hash)
     end
 
+    def self.parse(hash)
+      Legit.just(self.coerce(hash))
+    rescue Legit::CoerceError => e
+      Legit.fail(e.message)
+    end
+
     # Equality
 
     def ==(o)
