@@ -10,7 +10,7 @@ describe Legit::Value::Date do
       specify { subject.parse('').should be_nothing }
     end
 
-    context 'not a string' do
+    context 'invalid date' do
       specify { subject.parse(123).should be_error("invalid date: '123'") }
       specify { subject.parse('2012-02').should be_error("invalid date: '2012-02'") }
     end

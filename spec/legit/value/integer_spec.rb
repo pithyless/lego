@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Legit::Value::Integer do
 
-  describe '#parse', :focus do
+  describe '#parse' do
     subject { Legit::Value::Integer.new(opts) }
 
     let(:opts){ {} }
