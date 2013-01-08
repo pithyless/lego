@@ -1,16 +1,9 @@
 module Legit
   class Model
     class << self
+
       def attribute(attr, type)
-        if type.is_a?(Symbol)
-          parsers[attr.to_sym] = Legit::Value.const_get(type.to_s.camelize, false).new
-        elsif type.respond_to?(:coerce)
-          parsers[attr.to_sym] = type
-        else
-          fail NameError
-        end
-      rescue NameError
-        fail NameError, "Unknown Legit::Value parser: #{type.to_s.camelize}"
+        parsers[attr.to_sym] = parser = Legit.value_parser(type)
       end
 
       def parsers

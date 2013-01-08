@@ -7,6 +7,7 @@ module Legit
 end
 
 require_relative 'value/base'
+require_relative 'value/set'
 require_relative 'value/string'
 require_relative 'value/date'
 require_relative 'value/integer'
