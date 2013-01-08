@@ -2,7 +2,15 @@ module Legit
   class Model
     class << self
       def attribute(attr, type)
-        parsers[attr.to_sym] = Legit::Value.const_get(type.to_s.camelize).new
+        if type.is_a?(Symbol)
+          parsers[attr.to_sym] = Legit::Value.const_get(type.to_s.camelize, false).new
+        elsif type.respond_to?(:coerce)
+          parsers[attr.to_sym] = type
+        else
+          fail NameError
+        end
+      rescue NameError
+        fail NameError, "Unknown Legit::Value parser: #{type.to_s.camelize}"
       end
 
       def parsers
@@ -32,6 +40,10 @@ module Legit
 
     def method_missing(name, *args, &block)
       attributes.fetch(name.to_sym) { super }
+    end
+
+    def self.coerce(hash)
+      hash.instance_of?(self) ? hash : self.new(hash)
     end
 
     # Equality
