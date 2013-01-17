@@ -57,7 +57,7 @@ describe Legit::Value::Integer do
       end
 
       context 'with :default handler' do
-        subject { Legit::Value::String.new(default: handler) }
+        subject { Legit::Value::Integer.new(default: handler) }
 
         context 'nil handler' do
           let(:handler) { ->{ nil } }
