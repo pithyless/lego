@@ -1,9 +1,9 @@
 require 'spec_helper'
 
-describe Legit::Value::Float do
+describe Lego::Value::Float do
 
   describe '#parse' do
-    subject { Legit::Value::Float.new(opts) }
+    subject { Lego::Value::Float.new(opts) }
 
     let(:opts){ {} }
 
@@ -58,13 +58,13 @@ describe Legit::Value::Float do
     context 'nothing' do
       context 'default' do
         it 'raises error' do
-          expect{ subject.coerce(nil) }.to raise_error(Legit::CoerceError, 'missing value')
-          expect{ subject.coerce('') }.to raise_error(Legit::CoerceError, 'missing value')
+          expect{ subject.coerce(nil) }.to raise_error(Lego::CoerceError, 'missing value')
+          expect{ subject.coerce('') }.to raise_error(Lego::CoerceError, 'missing value')
         end
       end
 
       context 'with :default handler' do
-        subject { Legit::Value::Float.new(default: handler) }
+        subject { Lego::Value::Float.new(default: handler) }
 
         context 'nil handler' do
           let(:handler) { ->{ nil } }
@@ -80,7 +80,7 @@ describe Legit::Value::Float do
 
     context 'failure' do
       it 'raises error' do
-        expect{ subject.coerce('foo') }.to raise_error(Legit::CoerceError, "invalid float: 'foo'")
+        expect{ subject.coerce('foo') }.to raise_error(Lego::CoerceError, "invalid float: 'foo'")
       end
     end
 

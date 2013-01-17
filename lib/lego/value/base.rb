@@ -1,11 +1,11 @@
-module Legit::Value
+module Lego::Value
   class Base
     def initialize(opts={})
       @opts = opts
     end
 
     def parse(val)
-      val = val.nil? ? Legit.none : Legit.just(val)
+      val = val.nil? ? Lego.none : Lego.just(val)
 
       parsers.each do |callable|
         val = val.next(callable)
@@ -18,11 +18,11 @@ module Legit::Value
       if resp.value?
         resp.value
       elsif resp.error?
-        raise Legit::CoerceError, resp.error
+        raise Lego::CoerceError, resp.error
       elsif @opts[:default]
         @opts[:default].call
       else
-        raise Legit::CoerceError, 'missing value'
+        raise Lego::CoerceError, 'missing value'
       end
     end
 

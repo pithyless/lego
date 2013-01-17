@@ -1,9 +1,9 @@
 require 'spec_helper'
 
-describe Legit::Value::Date do
+describe Lego::Value::Date do
 
   describe '#parse' do
-    subject { Legit::Value::Date.new }
+    subject { Lego::Value::Date.new }
 
     context 'nil' do
       specify { subject.parse(nil).should be_nothing }
@@ -36,13 +36,13 @@ describe Legit::Value::Date do
     context 'nothing' do
       context 'default' do
         it 'raises error' do
-          expect{ subject.coerce(nil) }.to raise_error(Legit::CoerceError, 'missing value')
-          expect{ subject.coerce('') }.to raise_error(Legit::CoerceError, 'missing value')
+          expect{ subject.coerce(nil) }.to raise_error(Lego::CoerceError, 'missing value')
+          expect{ subject.coerce('') }.to raise_error(Lego::CoerceError, 'missing value')
         end
       end
 
       context 'with :default handler' do
-        subject { Legit::Value::String.new(default: handler) }
+        subject { Lego::Value::String.new(default: handler) }
 
         context 'nil handler' do
           let(:handler) { ->{ nil } }
@@ -58,7 +58,7 @@ describe Legit::Value::Date do
 
     context 'failure' do
       it 'raises error' do
-        expect{ subject.coerce(123) }.to raise_error(Legit::CoerceError, "invalid date: '123'")
+        expect{ subject.coerce(123) }.to raise_error(Lego::CoerceError, "invalid date: '123'")
       end
     end
 

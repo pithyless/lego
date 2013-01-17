@@ -1,4 +1,4 @@
-module Legit
+module Lego
 
   def self.none
     Either::None.new
@@ -47,13 +47,13 @@ module Legit
       def next(callable)
         callable.call(value).tap do |res|
           unless res.kind_of?(Eitherish)
-            fail TypeError, "Not Legit::Either: #{res.inspect}"
+            fail TypeError, "Not Lego::Either: #{res.inspect}"
           end
         end
       end
 
       def inspect
-        "<Legit::Either::Just '#{value}'>"
+        "<Lego::Either::Just '#{value}'>"
       end
     end
 
@@ -65,7 +65,7 @@ module Legit
       end
 
       def inspect
-        "<Legit::Either::None>"
+        "<Lego::Either::None>"
       end
     end
 
@@ -83,7 +83,7 @@ module Legit
       end
 
       def inspect
-        "<Legit::Either::Fail '#{error}'>"
+        "<Lego::Either::Fail '#{error}'>"
       end
     end
 

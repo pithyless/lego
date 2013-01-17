@@ -1,9 +1,9 @@
-module Legit
+module Lego
   class Model
     class << self
 
       def attribute(attr, type, *args)
-        parsers[attr.to_sym] = Legit.value_parser(type, *args)
+        parsers[attr.to_sym] = Lego.value_parser(type, *args)
       end
 
       def parsers
@@ -21,7 +21,7 @@ module Legit
           value = attrs.delete(name)
           begin
             h[name] = parser.coerce(value)
-          rescue Legit::CoerceError => e
+          rescue Lego::CoerceError => e
             fail ArgumentError, ":#{name} => #{e.message}"
           end
         end
@@ -40,9 +40,9 @@ module Legit
     end
 
     def self.parse(hash)
-      Legit.just(self.coerce(hash))
-    rescue Legit::CoerceError => e
-      Legit.fail(e.message)
+      Lego.just(self.coerce(hash))
+    rescue Lego::CoerceError => e
+      Lego.fail(e.message)
     end
 
     # Equality

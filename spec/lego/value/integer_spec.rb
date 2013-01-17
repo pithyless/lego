@@ -1,9 +1,9 @@
 require 'spec_helper'
 
-describe Legit::Value::Integer do
+describe Lego::Value::Integer do
 
   describe '#parse' do
-    subject { Legit::Value::Integer.new(opts) }
+    subject { Lego::Value::Integer.new(opts) }
 
     let(:opts){ {} }
 
@@ -51,13 +51,13 @@ describe Legit::Value::Integer do
     context 'nothing' do
       context 'default' do
         it 'raises error' do
-          expect{ subject.coerce(nil) }.to raise_error(Legit::CoerceError, 'missing value')
-          expect{ subject.coerce('') }.to raise_error(Legit::CoerceError, 'missing value')
+          expect{ subject.coerce(nil) }.to raise_error(Lego::CoerceError, 'missing value')
+          expect{ subject.coerce('') }.to raise_error(Lego::CoerceError, 'missing value')
         end
       end
 
       context 'with :default handler' do
-        subject { Legit::Value::Integer.new(default: handler) }
+        subject { Lego::Value::Integer.new(default: handler) }
 
         context 'nil handler' do
           let(:handler) { ->{ nil } }
@@ -73,7 +73,7 @@ describe Legit::Value::Integer do
 
     context 'failure' do
       it 'raises error' do
-        expect{ subject.coerce('foo') }.to raise_error(Legit::CoerceError, "invalid integer: 'foo'")
+        expect{ subject.coerce('foo') }.to raise_error(Lego::CoerceError, "invalid integer: 'foo'")
       end
     end
 

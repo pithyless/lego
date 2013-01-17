@@ -1,4 +1,4 @@
-module Legit::Value
+module Lego::Value
   class Boolean < Base
 
     def parsers
@@ -12,13 +12,13 @@ module Legit::Value
     def parse_boolean(v)
       case v
       when true, 'true'
-        Legit.just(true)
+        Lego.just(true)
       when false, 'false'
-        Legit.just(false)
+        Lego.just(false)
       when ''
-        Legit.none
+        Lego.none
       else
-        Legit.fail("invalid boolean: '#{v}'")
+        Lego.fail("invalid boolean: '#{v}'")
       end
     end
 

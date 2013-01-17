@@ -1,8 +1,8 @@
 require 'spec_helper'
 
-describe Legit::Either::Just do
+describe Lego::Either::Just do
 
-  subject { Legit::Either::Just.new(2) }
+  subject { Lego::Either::Just.new(2) }
 
   describe '#initialize' do
     its(:value?) { should == true }
@@ -16,7 +16,7 @@ describe Legit::Either::Just do
     end
 
     it 'defines shortcut' do
-      Legit.just(1).should be_value
+      Lego.just(1).should be_value
     end
   end
 
@@ -27,23 +27,23 @@ describe Legit::Either::Just do
     end
 
     it 'returns new Just' do
-      callable = ->(num) { Legit.just(num * 20) }
+      callable = ->(num) { Lego.just(num * 20) }
       subject.next(callable).should be_just(40)
     end
 
     it 'returns None' do
-      callable = ->(num) { Legit.none }
+      callable = ->(num) { Lego.none }
       subject.next(callable).should be_nothing
     end
 
     it 'returns Fail' do
-      callable = ->(num) { Legit.fail('oops') }
+      callable = ->(num) { Lego.fail('oops') }
       subject.next(callable).should be_error('oops')
     end
 
     it 'fails on not Eitherish return value' do
       callable = ->(num) { 'a string' }
-      ->{ subject.next(callable) }.should raise_error(TypeError, /Not Legit::Either/)
+      ->{ subject.next(callable) }.should raise_error(TypeError, /Not Lego::Either/)
     end
   end
 

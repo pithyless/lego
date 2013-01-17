@@ -1,8 +1,8 @@
 require 'spec_helper'
 
-describe Legit::Either::None do
+describe Lego::Either::None do
 
-  subject { Legit::Either::None.new }
+  subject { Lego::Either::None.new }
 
   its(:none?)  { should == true }
   its(:value?) { should == false }
@@ -17,7 +17,7 @@ describe Legit::Either::None do
   end
 
   it 'defines shortcut' do
-    Legit.none.should be_none
+    Lego.none.should be_none
   end
 
   describe '#next' do

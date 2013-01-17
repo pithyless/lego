@@ -1,32 +1,32 @@
-require_relative '../lib/legit'
+require_relative '../lib/lego'
 
 RSpec::Matchers.define :be_nothing do
   match do |actual|
-    actual.kind_of?(Legit::Either::None)
+    actual.kind_of?(Lego::Either::None)
   end
 
   failure_message_for_should do |actual|
-    "Expected <Legit::None>, not #{actual.inspect}"
+    "Expected <Lego::None>, not #{actual.inspect}"
   end
 end
 
 RSpec::Matchers.define :be_error do |expected|
   match do |actual|
-    actual.kind_of?(Legit::Either::Fail) and actual.error == expected
+    actual.kind_of?(Lego::Either::Fail) and actual.error == expected
   end
 
   failure_message_for_should do |actual|
-    "Expected <Legit::Either::Fail #{expected.inspect}>, not #{actual.inspect}"
+    "Expected <Lego::Either::Fail #{expected.inspect}>, not #{actual.inspect}"
   end
 end
 
 RSpec::Matchers.define :be_just do |expected|
   match do |actual|
-    actual.kind_of?(Legit::Either::Just) and actual.value == expected
+    actual.kind_of?(Lego::Either::Just) and actual.value == expected
   end
 
   failure_message_for_should do |actual|
-    "Expected <Legit::Either::Just #{expected.inspect}>, not #{actual.inspect}"
+    "Expected <Lego::Either::Just #{expected.inspect}>, not #{actual.inspect}"
   end
 end
 

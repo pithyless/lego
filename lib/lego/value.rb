@@ -1,7 +1,7 @@
 require 'active_support/core_ext/string'
 require 'active_support/core_ext/time/conversions'
 
-module Legit
+module Lego
   module Value
   end
 end

@@ -1,22 +1,22 @@
-module Legit
+module Lego
   require 'active_support/json/encoding'
 
   CoerceError = Class.new(StandardError)
 
-  require_relative 'legit/either'
-  require_relative 'legit/value'
-  require_relative 'legit/model'
+  require_relative 'lego/either'
+  require_relative 'lego/value'
+  require_relative 'lego/model'
 
   def self.value_parser(item, *args)
     if item.is_a?(Symbol)
-      Legit::Value.const_get(item.to_s.camelize, false).new(*args)
+      Lego::Value.const_get(item.to_s.camelize, false).new(*args)
     elsif item.respond_to?(:coerce)
       item
     else
       fail NameError
     end
   rescue NameError
-    fail NameError, "Unknown Legit::Value parser: #{item.to_s.camelize}"
+    fail NameError, "Unknown Lego::Value parser: #{item.to_s.camelize}"
   end
 
 end

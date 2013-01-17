@@ -1,8 +1,8 @@
 require 'spec_helper'
 
-describe Legit::Either::Fail do
+describe Lego::Either::Fail do
 
-  subject { Legit::Either::Fail.new(2) }
+  subject { Lego::Either::Fail.new(2) }
 
   describe '#initialize' do
 
@@ -17,7 +17,7 @@ describe Legit::Either::Fail do
     end
 
     it 'defines shortcut' do
-      Legit.fail(1).should be_error(1)
+      Lego.fail(1).should be_error(1)
     end
   end
 

@@ -1,18 +1,18 @@
 require 'set'
 
-module Legit::Value
+module Lego::Value
   class Set < Base
 
     def initialize(type, opts={})
-      @_item_parser = Legit.value_parser(type)
+      @_item_parser = Lego.value_parser(type)
       super(opts)
     end
 
     def parsers
       [
-       ->(v) { v.respond_to?(:to_set) ? Legit.just(v.to_set) : Legit.fail("invalid set: '#{v}'") },
+       ->(v) { v.respond_to?(:to_set) ? Lego.just(v.to_set) : Lego.fail("invalid set: '#{v}'") },
        ->(v) { parse_items(v) },
-       ->(v) { (not allow_empty? and v.empty?) ? Legit.none : Legit.just(v) },
+       ->(v) { (not allow_empty? and v.empty?) ? Lego.none : Lego.just(v) },
       ]
     end
 
@@ -28,7 +28,7 @@ module Legit::Value
           return new_item
         end
       end
-      Legit.just(new_set)
+      Lego.just(new_set)
     end
 
     def allow_empty?

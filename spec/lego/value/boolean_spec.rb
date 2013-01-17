@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Legit::Value::Boolean do
+describe Lego::Value::Boolean do
 
   describe '#parse' do
     context 'nil' do
@@ -29,20 +29,20 @@ describe Legit::Value::Boolean do
     context 'nothing' do
       context 'default' do
         it 'raises error' do
-          expect{ subject.coerce(nil) }.to raise_error(Legit::CoerceError, 'missing value')
-          expect{ subject.coerce('') }.to raise_error(Legit::CoerceError, 'missing value')
+          expect{ subject.coerce(nil) }.to raise_error(Lego::CoerceError, 'missing value')
+          expect{ subject.coerce('') }.to raise_error(Lego::CoerceError, 'missing value')
         end
       end
 
       context 'default handler -> false' do
-        subject { Legit::Value::Boolean.new(default: ->{ false }) }
+        subject { Lego::Value::Boolean.new(default: ->{ false }) }
         specify { subject.coerce(nil).should == false }
         specify { subject.coerce('').should == false }
         specify { subject.coerce(true).should == true }
       end
 
       context 'default handler -> true' do
-        subject { Legit::Value::Boolean.new(default: ->{ true }) }
+        subject { Lego::Value::Boolean.new(default: ->{ true }) }
         specify { subject.coerce(nil).should == true }
         specify { subject.coerce('').should == true }
         specify { subject.coerce(false).should == false }
@@ -51,7 +51,7 @@ describe Legit::Value::Boolean do
 
     context 'failure' do
       it 'raises error' do
-        expect{ subject.coerce(123) }.to raise_error(Legit::CoerceError, "invalid boolean: '123'")
+        expect{ subject.coerce(123) }.to raise_error(Lego::CoerceError, "invalid boolean: '123'")
       end
     end
 

@@ -1,9 +1,9 @@
 require 'spec_helper'
 
-describe Legit::Value::String do
+describe Lego::Value::String do
 
   describe '#parse' do
-    subject { Legit::Value::String.new(opts) }
+    subject { Lego::Value::String.new(opts) }
 
     let(:allow_blank) { true }
     let(:strip) { true }
@@ -58,7 +58,7 @@ describe Legit::Value::String do
     end
 
     context 'defaults' do
-      subject { Legit::Value::String.new }
+      subject { Lego::Value::String.new }
 
       its(:allow_blank?){ should == false }
       its(:strip?){ should == true }
@@ -70,14 +70,14 @@ describe Legit::Value::String do
     context 'nothing' do
       context 'default' do
         it 'raises error' do
-          expect{ subject.coerce(nil) }.to raise_error(Legit::CoerceError, 'missing value')
-          expect{ subject.coerce('') }.to raise_error(Legit::CoerceError, 'missing value')
-          expect{ subject.coerce('  ') }.to raise_error(Legit::CoerceError, 'missing value')
+          expect{ subject.coerce(nil) }.to raise_error(Lego::CoerceError, 'missing value')
+          expect{ subject.coerce('') }.to raise_error(Lego::CoerceError, 'missing value')
+          expect{ subject.coerce('  ') }.to raise_error(Lego::CoerceError, 'missing value')
         end
       end
 
       context 'with :default handler' do
-        subject { Legit::Value::String.new(default: handler) }
+        subject { Lego::Value::String.new(default: handler) }
 
         context 'nil handler' do
           let(:handler) { ->{ nil } }
@@ -93,7 +93,7 @@ describe Legit::Value::String do
 
     context 'failure' do
       it 'raises error' do
-        expect{ subject.coerce(123) }.to raise_error(Legit::CoerceError, "invalid string: '123'")
+        expect{ subject.coerce(123) }.to raise_error(Lego::CoerceError, "invalid string: '123'")
       end
     end
 

@@ -1,3 +1,3 @@
-# Legit
+# Lego
 
-Making sure your forms are legit since 2012.
+Data building blocks for your app.

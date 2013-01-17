@@ -1,13 +1,13 @@
 require 'spec_helper'
 
-describe Legit::Model do
+describe Lego::Model do
 
-  class Person < Legit::Model
+  class Person < Lego::Model
     attribute :name, :string
     attribute :age,  :integer
   end
 
-  class Family < Legit::Model
+  class Family < Lego::Model
     attribute :last_name, :string
     attribute :father, Person
   end

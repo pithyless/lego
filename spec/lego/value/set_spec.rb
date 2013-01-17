@@ -1,12 +1,12 @@
 require 'spec_helper'
 
-describe Legit::Value::Set do
+describe Lego::Value::Set do
 
   def set(elem)
     Array(elem).to_set
   end
 
-  subject { Legit::Value::Set.new(:string) }
+  subject { Lego::Value::Set.new(:string) }
 
   describe '#parse' do
     context 'nil' do
@@ -28,12 +28,12 @@ describe Legit::Value::Set do
     end
 
     context 'allow empty' do
-      subject { Legit::Value::Set.new(:string, allow_empty: true) }
+      subject { Lego::Value::Set.new(:string, allow_empty: true) }
       specify { subject.parse([]).should be_just(set([])) }
     end
 
     context 'disallow empty' do
-      subject { Legit::Value::Set.new(:string, allow_empty: false) }
+      subject { Lego::Value::Set.new(:string, allow_empty: false) }
       specify { subject.parse([]).should be_nothing }
     end
   end
@@ -41,13 +41,13 @@ describe Legit::Value::Set do
   describe '#coerce' do
     context 'missing' do
       it 'raises error' do
-        expect{ subject.coerce(nil) }.to raise_error(Legit::CoerceError, 'missing value')
-        expect{ subject.coerce([]) }.to raise_error(Legit::CoerceError, 'missing value')
-        expect{ subject.coerce([].to_set) }.to raise_error(Legit::CoerceError, 'missing value')
+        expect{ subject.coerce(nil) }.to raise_error(Lego::CoerceError, 'missing value')
+        expect{ subject.coerce([]) }.to raise_error(Lego::CoerceError, 'missing value')
+        expect{ subject.coerce([].to_set) }.to raise_error(Lego::CoerceError, 'missing value')
       end
 
       context 'with :default handler' do
-        subject { Legit::Value::String.new(default: handler) }
+        subject { Lego::Value::String.new(default: handler) }
 
         context 'nil handler' do
           let(:handler) { ->{ nil } }
@@ -63,7 +63,7 @@ describe Legit::Value::Set do
 
     context 'failure' do
       it 'raises error' do
-        expect{ subject.coerce([123]) }.to raise_error(Legit::CoerceError, "invalid string: '123'")
+        expect{ subject.coerce([123]) }.to raise_error(Lego::CoerceError, "invalid string: '123'")
       end
     end
 

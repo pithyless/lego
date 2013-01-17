@@ -1,9 +1,9 @@
 require 'spec_helper'
 
-describe Legit::Value::Base do
+describe Lego::Value::Base do
   let(:opts) { {} }
 
-  subject { Legit::Value::Base.new(opts) }
+  subject { Lego::Value::Base.new(opts) }
 
   describe '#parse' do
     context 'nil' do
