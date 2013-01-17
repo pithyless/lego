@@ -75,4 +75,19 @@ describe Legit::Model do
     end
   end
 
+
+  describe '#as_json' do
+    it 'serializes Family' do
+      family = Family.new(last_name: 'Kowalski', father: { name: 'Bob', age: '55' })
+      family.as_json.should == {
+        :last_name => "Kowalski",
+        :father => {
+          :name => "Bob",
+          :age => 55
+        }
+      }
+    end
+
+  end
+
 end

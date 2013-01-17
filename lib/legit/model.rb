@@ -55,5 +55,15 @@ module Legit
     def hash
       attributes.hash
     end
+
+    # Serialize
+
+    def as_json
+      {}.tap do |h|
+        attributes.each do |attr, val|
+          h[attr] = val.as_json
+        end
+      end
+    end
   end
 end

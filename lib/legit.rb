@@ -1,4 +1,6 @@
 module Legit
+  require 'active_support/json/encoding'
+
   CoerceError = Class.new(StandardError)
 
   require_relative 'legit/either'
