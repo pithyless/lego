@@ -6,6 +6,7 @@ module Lego::Value
        ->(v) { v.respond_to?(:to_str) ? Lego.just(v.to_str) : Lego.fail("invalid string: '#{v}'") },
        ->(v) { strip? ? Lego.just(v.strip) : Lego.just(v) },
        ->(v) { (not allow_blank? and v.blank?) ? Lego.none : Lego.just(v) },
+       ->(v) { check_regexp? ? assert_regexp(v) : Lego.just(v) }
       ]
     end
 
@@ -16,5 +17,21 @@ module Lego::Value
     def strip?
       @opts.fetch(:strip, true)
     end
+
+    private
+
+    def check_regexp?
+      @opts.key?(:matches)
+    end
+
+    def assert_regexp(v)
+      regex = @opts.fetch(:matches)
+      if regex =~ v
+        Lego.just(v)
+      else
+        Lego.fail("does not match (#{regex.inspect}): '#{v}'")
+      end
+    end
+
   end
 end

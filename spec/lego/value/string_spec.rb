@@ -57,6 +57,16 @@ describe Lego::Value::String do
       end
     end
 
+    context 'matches' do
+      subject { Lego::Value::String.new(opts.merge(matches: /^[A-Z]{3}$/)) }
+
+      specify { subject.parse(nil).should be_nothing }
+      specify { subject.parse(123).should be_error("invalid string: '123'") }
+
+      specify { subject.parse('abc').should be_error("does not match (/^[A-Z]{3}$/): 'abc'") }
+      specify { subject.parse('TLC').should be_just('TLC') }
+    end
+
     context 'defaults' do
       subject { Lego::Value::String.new }
 
