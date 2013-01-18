@@ -3,12 +3,12 @@ require 'spec_helper'
 describe Lego::Model do
 
   class Person < Lego::Model
-    attribute :name, :string
-    attribute :age,  :integer
+    attribute :name, String
+    attribute :age,  Integer
   end
 
   class Family < Lego::Model
-    attribute :last_name, :string
+    attribute :last_name, String
     attribute :father, Person
   end
 

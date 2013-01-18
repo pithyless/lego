@@ -8,15 +8,15 @@ module Lego
   require_relative 'lego/model'
 
   def self.value_parser(item, *args)
-    if item.is_a?(Symbol)
-      Lego::Value.const_get(item.to_s.camelize, false).new(*args)
+    if Lego::Value.const_defined?(item.to_s, false)
+      Lego::Value.const_get(item.to_s, false).new(*args)
     elsif item.respond_to?(:coerce)
       item
     else
-      fail NameError
+      raise NameError
     end
   rescue NameError
-    fail NameError, "Unknown Lego::Value parser: #{item.to_s.camelize}"
+    raise NameError, "Unknown Lego::Value parser: #{item.to_s}"
   end
 
 end

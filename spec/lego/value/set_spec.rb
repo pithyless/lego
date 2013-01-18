@@ -6,7 +6,7 @@ describe Lego::Value::Set do
     Array(elem).to_set
   end
 
-  subject { Lego::Value::Set.new(:string) }
+  subject { Lego::Value::Set.new(String) }
 
   describe '#parse' do
     context 'nil' do
@@ -28,12 +28,12 @@ describe Lego::Value::Set do
     end
 
     context 'allow empty' do
-      subject { Lego::Value::Set.new(:string, allow_empty: true) }
+      subject { Lego::Value::Set.new(String, allow_empty: true) }
       specify { subject.parse([]).should be_just(set([])) }
     end
 
     context 'disallow empty' do
-      subject { Lego::Value::Set.new(:string, allow_empty: false) }
+      subject { Lego::Value::Set.new(String, allow_empty: false) }
       specify { subject.parse([]).should be_nothing }
     end
   end
@@ -47,7 +47,7 @@ describe Lego::Value::Set do
       end
 
       context 'with :default handler' do
-        subject { Lego::Value::String.new(default: handler) }
+        subject { Lego::Value::Set.new(String, default: handler) }
 
         context 'nil handler' do
           let(:handler) { ->{ nil } }
@@ -56,7 +56,7 @@ describe Lego::Value::Set do
 
         context 'lambda handler' do
           let(:handler) { proc{ Set.new } }
-          specify { subject.coerce('').should == [].to_set }
+          specify { subject.coerce(nil).should == [].to_set }
         end
       end
     end
