@@ -87,7 +87,23 @@ describe Lego::Model do
         }
       }
     end
+  end
 
+  describe '#merge' do
+    let(:one) { Family.new(last_name: 'Kowalski', father: { name: 'Bob', age: '55' }) }
+
+    it 'returns new object' do
+      two = one.merge({})
+      two.should == one
+      two.should_not equal(one)
+    end
+
+    it 'merges changes' do
+      two = one.merge(last_name: 'Tesla', father: { name: 'Nikola' })
+
+      one.should == Family.new(last_name: 'Kowalski', father: { name: 'Bob', age: '55' })
+      two.should == Family.new(last_name: 'Tesla', father: { name: 'Nikola', age: '55' })
+    end
   end
 
 end

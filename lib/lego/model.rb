@@ -1,3 +1,5 @@
+require 'active_support/core_ext/hash/deep_merge'
+
 module Lego
   class Model
     class << self
@@ -30,6 +32,10 @@ module Lego
     end
 
     attr_reader :attributes
+
+    def merge(other)
+      self.class.new(as_json.deep_merge(other))
+    end
 
     def method_missing(name, *args, &block)
       attributes.fetch(name.to_sym) { super }
