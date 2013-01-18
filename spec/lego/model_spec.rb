@@ -41,6 +41,12 @@ describe Lego::Model do
     it 'fails on non-hash initialize' do
       expect{ Person.new(nil) }.to raise_error(ArgumentError, "attrs must be hash: 'nil'")
     end
+
+    it 'dupes attributes' do
+      h = { name: 'Alice', age: 10 }
+      Person.new(h)
+      h.should == { name: 'Alice', age: 10 }
+    end
   end
 
   context 'equality' do

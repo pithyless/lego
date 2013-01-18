@@ -19,6 +19,7 @@ module Lego
 
     def initialize(attrs={})
       fail ArgumentError, "attrs must be hash: '#{attrs.inspect}'" unless attrs.respond_to?(:key?)
+      attrs = attrs.dup
       @attributes = {}.tap do |h|
         self.class.parsers.each do |name, parser|
           name = name.to_sym
