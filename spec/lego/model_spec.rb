@@ -37,6 +37,10 @@ describe Lego::Model do
       expect{ Person.new(name: 'Alice') }.to raise_error(ArgumentError, ":age => missing value")
       expect{ Person.new(name: 'Alice', age: Date.today) }.to raise_error(ArgumentError, /invalid integer/)
     end
+
+    it 'fails on non-hash initialize' do
+      expect{ Person.new(nil) }.to raise_error(ArgumentError, "attrs must be hash: 'nil'")
+    end
   end
 
   context 'equality' do
