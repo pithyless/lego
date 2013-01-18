@@ -67,7 +67,8 @@ module Lego
 
     # Serialize
 
-    def as_json
+    def as_json(opts={})
+      raise NotImplementedError, 'as_json with arguments' unless opts.empty?
       {}.tap do |h|
         attributes.each do |attr, val|
           h[attr] = val.as_json
