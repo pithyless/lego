@@ -8,7 +8,7 @@ module Lego
   require_relative 'lego/model'
 
   def self.value_parser(item, *args)
-    if Lego::Value.const_defined?(item.to_s, false)
+    if (Lego::Value.const_defined?(item.to_s, false) rescue false)
       Lego::Value.const_get(item.to_s, false).new(*args)
     elsif item.respond_to?(:coerce)
       item
