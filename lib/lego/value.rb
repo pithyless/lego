@@ -6,6 +6,8 @@ module Lego
   end
 end
 
+class Boolean; end
+
 require_relative 'value/base'
 require_relative 'value/set'
 require_relative 'value/array'
