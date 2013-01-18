@@ -20,7 +20,8 @@ module Lego
     def initialize(attrs={})
       @attributes = {}.tap do |h|
         self.class.parsers.each do |name, parser|
-          value = attrs.delete(name)
+          name = name.to_sym
+          value = attrs.key?(name) ? attrs.delete(name) : attrs.delete(name.to_s)
           begin
             h[name] = parser.coerce(value)
           rescue Lego::CoerceError => e

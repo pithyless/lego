@@ -73,6 +73,13 @@ describe Lego::Model do
       family.last_name.should == 'Kowalski'
       family.father.should == Person.new(name: 'Bob', age: '55')
     end
+
+    it 'initializes from string keys' do
+      family = Family.new('last_name' => 'Kowalski', 'father' => Person.new('name' => 'Bob', 'age' => '55'))
+      family.should be_instance_of(Family)
+      family.last_name.should == 'Kowalski'
+      family.father.should == Person.new(name: 'Bob', age: '55')
+    end
   end
 
 
