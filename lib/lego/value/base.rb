@@ -1,5 +1,6 @@
 module Lego::Value
   class Base
+
     def initialize(opts={})
       @opts = opts
     end
