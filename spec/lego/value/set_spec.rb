@@ -6,11 +6,11 @@ describe Lego::Value::Set do
     Array(elem).to_set
   end
 
-  subject { Lego::Value::Set.new(String) }
+  subject { Lego::Value::Set.new(String, default: ->{ 'DEFAULT' } ) }
 
   describe '#parse' do
     context 'nil' do
-      specify { subject.parse(nil).should be_nothing }
+      specify { subject.parse(nil).should be_just('DEFAULT') }
     end
 
     context 'invalid set or item' do
@@ -33,12 +33,14 @@ describe Lego::Value::Set do
     end
 
     context 'disallow empty' do
-      subject { Lego::Value::Set.new(String, allow_empty: false) }
-      specify { subject.parse([]).should be_nothing }
+      subject { Lego::Value::Set.new(String, allow_empty: false, default: ->{ 'DEFAULT' }) }
+      specify { subject.parse([]).should be_just('DEFAULT') }
     end
   end
 
   describe '#coerce' do
+    subject { Lego::Value::Set.new(String) }
+
     context 'missing' do
       it 'raises error' do
         expect{ subject.coerce(nil) }.to raise_error(Lego::CoerceError, 'missing value')
