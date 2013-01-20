@@ -38,9 +38,7 @@ module Lego
       end
 
       def coerce(hash)
-        obj = hash.instance_of?(self) ? hash : self.new(hash)
-        res = _validate(obj)
-        res.value? ? res.value : fail(CoerceError, res.error)
+        hash.instance_of?(self) ? hash : self.new(hash)
       end
 
       def parse(hash)
@@ -48,8 +46,6 @@ module Lego
       rescue Lego::CoerceError => e
         Lego.fail(e.message)
       end
-
-      private
 
       def _validate(obj)
         res = Lego.just(obj)
@@ -62,23 +58,41 @@ module Lego
         end
         res
       end
+
+      def _parse(data)
+        data = data.dup
+
+        attrs = {}
+
+        parsers.each do |name, parser|
+          name = name.to_sym
+          value = data.key?(name) ? data.delete(name) : data.delete(name.to_s)
+
+          attrs[name] = parser.parse(value)
+        end
+
+        fail ArgumentError, "Unknown attributes: #{data}" unless data.empty?
+
+        if attrs.all?{ |k,v| v.value? }
+          Lego.just(Hash[*attrs.map{ |k,v| [k, v.value] }.flatten])
+        else
+          Lego.fail(Hash[*attrs.map{ |k,v| [k, v.error] if v.error? }.compact.flatten])
+        end
+      end
     end
 
     def initialize(attrs={})
       fail ArgumentError, "attrs must be hash: '#{attrs.inspect}'" unless attrs.respond_to?(:key?)
-      attrs = attrs.dup
-      @attributes = {}.tap do |h|
-        self.class.parsers.each do |name, parser|
-          name = name.to_sym
-          value = attrs.key?(name) ? attrs.delete(name) : attrs.delete(name.to_s)
-          begin
-            h[name] = parser.coerce(value)
-          rescue Lego::CoerceError => e
-            fail ArgumentError, ":#{name} => #{e.message}"
-          end
-        end
-      end.freeze
-      fail ArgumentError, "Unknown attributes: #{attrs}" unless attrs.empty?
+
+      attrs = self.class._parse(attrs)
+      if attrs.value?
+        @attributes = attrs.value.freeze
+      else
+        fail ArgumentError, attrs.error.inspect
+      end
+
+      res = self.class._validate(self)
+      res.value? ? res.value : fail(CoerceError, res.error.to_s)
     end
 
     attr_reader :attributes

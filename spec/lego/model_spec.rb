@@ -35,7 +35,7 @@ describe Lego::Model do
     end
 
     it 'fails on validation' do
-      expect{ Person.new(name: 'Alice') }.to raise_error(ArgumentError, ":age => missing value")
+      expect{ Person.new(name: 'Alice') }.to raise_error(ArgumentError, '{:age=>"missing value"}')
       expect{ Person.new(name: 'Alice', age: Date.today) }.to raise_error(ArgumentError, /invalid integer/)
     end
 

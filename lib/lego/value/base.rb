@@ -22,14 +22,8 @@ module Lego::Value
     end
 
     def coerce(val)
-      case res = parse(val)
-      when Lego::Either::Just
-        res.value
-      when Lego::Either::Fail
-        raise Lego::CoerceError, res.error
-      else
-        fail "Invalid parse return: #{res}"
-      end
+      res = parse(val)
+      res.value? ? res.value : fail(Lego::CoerceError, res.error)
     end
 
     def parsers
