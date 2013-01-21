@@ -76,7 +76,7 @@ module Lego
         if attrs.all?{ |k,v| v.value? }
           Lego.just(obj)
         else
-          Lego.fail(Hash[*attrs.map{ |k,v| [k, v.error] if v.error? }.compact.flatten])
+          Lego.fail(Hash[*attrs.map{ |k,v| [k, v.error] if v.error? }.compact.flatten(1)])
         end
       end
 
@@ -95,9 +95,9 @@ module Lego
         fail ArgumentError, "Unknown attributes: #{data}" unless data.empty?
 
         if attrs.all?{ |k,v| v.value? }
-          Lego.just(Hash[*attrs.map{ |k,v| [k, v.value] }.flatten])
+          Lego.just(Hash[*attrs.map{ |k,v| [k, v.value] }.flatten(1)])
         else
-          Lego.fail(Hash[*attrs.map{ |k,v| [k, v.error] if v.error? }.compact.flatten])
+          Lego.fail(Hash[*attrs.map{ |k,v| [k, v.error] if v.error? }.compact.flatten(1)])
         end
       end
     end

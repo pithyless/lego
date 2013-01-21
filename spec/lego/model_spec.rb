@@ -198,4 +198,13 @@ describe Lego::Model do
     end
   end
 
+  it 'correctly handles array values' do
+    klass = Class.new(Lego::Model) do
+      attribute :nums, Array, Integer, length: 2
+    end
+
+    klass.parse(nums: [1,2]).should be_value
+    klass.parse(nums: [1,2,3,4]).should be_error(nums: "length not 2: '[1, 2, 3, 4]'")
+  end
+
 end
