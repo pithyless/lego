@@ -40,13 +40,23 @@ module Lego
       end
 
       def coerce(hash)
-        hash.instance_of?(self) ? hash : new(hash)
+        res = parse(hash)
+        res.value? ? res.value : fail(ArgumentError, res.error.inspect)
       end
 
       def parse(hash)
-        Lego.just(self.coerce(hash))
-      rescue Lego::CoerceError => e
-        Lego.fail(e.message)
+        return Lego.just(hash) if hash.instance_of?(self)
+
+        fail ArgumentError, "attrs must be hash: '#{hash.inspect}'" unless hash.respond_to?(:key?)
+
+        result = _parse(hash)
+
+        if result.value?
+          model = new(result.value)
+          _validate(model)
+        else
+          result
+        end
       end
 
       def _validate(obj)
@@ -84,17 +94,7 @@ module Lego
     end
 
     def initialize(attrs={})
-      fail ArgumentError, "attrs must be hash: '#{attrs.inspect}'" unless attrs.respond_to?(:key?)
-
-      attrs = self.class._parse(attrs)
-      if attrs.value?
-        @attributes = attrs.value.freeze
-      else
-        fail ArgumentError, attrs.error.inspect
-      end
-
-      res = self.class._validate(self)
-      res.value? ? res.value : fail(CoerceError, res.error.to_s)
+      @attributes = attrs.freeze
     end
 
     attr_reader :attributes
