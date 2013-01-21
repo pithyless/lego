@@ -2,6 +2,15 @@ require 'active_support/core_ext/hash/deep_merge'
 
 module Lego
   class Model
+    class ParseError < StandardError
+      def initialize(errors={})
+        @errors = errors
+        super(errors.inspect)
+      end
+
+      attr_reader :errors
+    end
+
     private_class_method :new
 
     class << self
@@ -33,7 +42,7 @@ module Lego
 
       def coerce(hash)
         res = parse(hash)
-        res.value? ? res.value : fail(ArgumentError, res.error.inspect)
+        res.value? ? res.value : fail(ParseError.new(res.error))
       end
 
       def parse(hash)

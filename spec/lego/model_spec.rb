@@ -35,8 +35,16 @@ describe Lego::Model do
     end
 
     it 'fails on validation' do
-      expect{ Person.coerce(name: 'Alice') }.to raise_error(ArgumentError, '{:age=>"missing value"}')
-      expect{ Person.coerce(name: 'Alice', age: Date.today) }.to raise_error(ArgumentError, /invalid integer/)
+      expect{ Person.coerce(name: 'Alice') }.to raise_error(Lego::Model::ParseError, '{:age=>"missing value"}')
+      expect{ Person.coerce(name: 'Alice', age: Date.today) }.to raise_error(Lego::Model::ParseError, /invalid integer/)
+    end
+
+    it 'stores errors as hash' do
+      begin
+        Person.coerce(name: 'Alice')
+      rescue => e
+        e.errors.should == { age: 'missing value' }
+      end
     end
 
     it 'fails on non-hash initialize' do
