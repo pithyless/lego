@@ -132,10 +132,10 @@ describe Lego::Model do
         attribute :start, Date
         attribute :stop, Date
 
-        validates { |o| o.start < o.stop ? Lego.just(o) : Lego.fail('must start before end') }
+        validates :start do |o| o.start < o.stop ? Lego.just(o) : Lego.fail('must start before end') end
       end
 
-      klass.parse(start: today.to_s, stop: today).should be_error('must start before end')
+      klass.parse(start: today.to_s, stop: today).should be_error({start: 'must start before end'})
     end
 
     it 'validates via block' do
@@ -143,22 +143,37 @@ describe Lego::Model do
         attribute :start, Date
         attribute :stop, Date
 
-        validates { |o| o.start < o.stop ? Lego.just(o) : Lego.fail('must start before end') }
-        validates { |o| (o.start + 2) < o.stop ? Lego.just(o) : Lego.fail('at least 3 days after') }
+        validates :start do |o| o.start < o.stop ? Lego.just(o) : Lego.fail('must start before end') end
+        validates :start do |o| (o.start + 2) < o.stop ? Lego.just(o) : Lego.fail('at least 3 days after') end
       end
 
-      klass.parse(start: today.to_s, stop: today.to_s).should be_error('must start before end')
-      klass.parse(start: today.to_s, stop: (today + 2).to_s).should be_error('at least 3 days after')
+      klass.parse(start: today.to_s, stop: today.to_s).should be_error(start: 'must start before end')
+      klass.parse(start: today.to_s, stop: (today + 2).to_s).should be_error(start: 'at least 3 days after')
       klass.parse(start: today.to_s, stop: (today + 3).to_s).should be_value
     end
+
+
+    it 'validates until first error in each attribute' do
+      klass = Class.new(Lego::Model) do
+        attribute :start, Date
+        attribute :stop, Date
+
+        validates :start do |o| o.start < o.stop ? Lego.just(o) : Lego.fail('must start before end') end
+        validates :start do |o| fail 'Should NOT EXECUTE' end
+        validates :stop  do |o| o.stop > o.start + 1 ? Lego.just(o) : Lego.fail('must stop after at least 3 days') end
+      end
+
+      klass.parse(start: today, stop: today).should be_error(start: 'must start before end', stop: 'must stop after at least 3 days')
+    end
+
 
     it 'validates via instance method' do
       klass = Class.new(Lego::Model) do
         attribute :start, Date
         attribute :stop, Date
 
-        validates :check_start_before_end
-        validates :check_at_least_3_days
+        validates :start, :check_start_before_end
+        validates :start, :check_at_least_3_days
 
         def check_start_before_end
           start < stop ? Lego.just(self) : Lego.fail('must start before end')
@@ -169,62 +184,10 @@ describe Lego::Model do
         end
       end
 
-      klass.parse(start: today.to_s, stop: today.to_s).should be_error('must start before end')
-      klass.parse(start: today.to_s, stop: (today + 2).to_s).should be_error('at least 3 days after')
+      klass.parse(start: today.to_s, stop: today.to_s).should be_error(start: 'must start before end')
+      klass.parse(start: today.to_s, stop: (today + 2).to_s).should be_error(start: 'at least 3 days after')
       klass.parse(start: today.to_s, stop: (today + 3).to_s).should be_value
     end
-  end
-
-
-  describe '::validate' do
-    let(:today) { Date.today }
-
-    it 'validate via message and boolean callable' do
-      klass = Class.new(Lego::Model) do
-        attribute :start, Date
-        attribute :stop, Date
-
-        validate 'must start before end', ->(o){ o.start < o.stop }
-        validate 'at least 3 days after', ->(o){ (o.start + 2) < o.stop }
-      end
-
-      klass.parse(start: today.to_s, stop: today.to_s).should be_error('must start before end')
-      klass.parse(start: today.to_s, stop: (today + 2).to_s).should be_error('at least 3 days after')
-      klass.parse(start: today.to_s, stop: (today + 3).to_s).should be_value
-    end
-
-    it 'validates via message and boolean instance method' do
-      klass = Class.new(Lego::Model) do
-        attribute :start, Date
-        attribute :stop, Date
-        attribute :enabled, Boolean, default: ->{ true }
-
-        validate 'must start before end', :start_after_end?
-        validate 'at least 3 days after', :start_much_later?
-        validate 'not enabled', :enabled?
-
-        def start_after_end?
-          start < stop
-        end
-
-        def start_much_later?
-          (start + 2) < stop
-        end
-
-        def enabled?
-          !!enabled
-        end
-      end
-
-      klass.parse(start: today, stop: today).should be_error('must start before end')
-      klass.parse(start: today, stop: today + 2).should be_error('at least 3 days after')
-      klass.parse(start: today, stop: today + 3, enabled: false).should be_error('not enabled')
-      klass.parse(start: today, stop: today + 3).should be_value
-    end
-
-    it 'validates via proc' do
-    end
-
   end
 
 end

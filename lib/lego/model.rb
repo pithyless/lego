@@ -15,27 +15,19 @@ module Lego
       end
 
       def validations
-        @_validations ||= []
+        @_validations ||= Hash.new { |h,k| h[k] = [] }
       end
 
       def attribute_names
         parsers.keys
       end
 
-      def validates(callable=nil, &block)
+      def validates(attr, callable=nil, &block)
+        attr = attr.to_sym
         if callable && callable.is_a?(Symbol)
-          validations << callable
+          validations[attr] << callable
         else
-          validations << block
-        end
-      end
-
-      def validate(msg, callable)
-        if callable.is_a?(Symbol)
-          callable_name = callable.to_sym
-          validations << ->(v) { v.method(callable_name).call ? Lego.just(v) : Lego.fail(msg) }
-        else
-          validations << ->(v) { callable.call(v) ? Lego.just(v) : Lego.fail(msg) }
+          validations[attr] << block
         end
       end
 
@@ -60,15 +52,23 @@ module Lego
       end
 
       def _validate(obj)
-        res = Lego.just(obj)
-        validations.each do |validation|
-          if validation.is_a?(Symbol)
-            callable_method_name = validation.to_sym
-            validation = ->(o){ o.method(callable_method_name).call }
+        attrs = {}
+        validations.each do |name, attr_validations|
+          attrs[name] = Lego.just(obj)
+          attr_validations.each do |validation|
+            if validation.is_a?(Symbol)
+              callable_method_name = validation.to_sym
+              validation = ->(o){ o.method(callable_method_name).call }
+            end
+            attrs[name] = attrs[name].next(validation)
           end
-          res = res.next(validation)
         end
-        res
+
+        if attrs.all?{ |k,v| v.value? }
+          Lego.just(obj)
+        else
+          Lego.fail(Hash[*attrs.map{ |k,v| [k, v.error] if v.error? }.compact.flatten])
+        end
       end
 
       def _parse(data)
