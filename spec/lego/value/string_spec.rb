@@ -11,12 +11,13 @@ describe Lego::Value::String do
     let(:opts) do
       {
         allow_blank: allow_blank,
-        strip: strip
+        strip: strip,
+        default: ->{ 'DEFAULT' }
       }
     end
 
     context 'nil' do
-      specify { subject.parse(nil).should be_nothing }
+      specify { subject.parse(nil).should be_just('DEFAULT') }
     end
 
     context 'not a string' do
@@ -46,21 +47,21 @@ describe Lego::Value::String do
 
       context 'strip' do
         let(:strip) { true }
-        specify { subject.parse('').should be_nothing }
-        specify { subject.parse('   ').should be_nothing }
+        specify { subject.parse('').should be_just('DEFAULT') }
+        specify { subject.parse('   ').should be_just('DEFAULT') }
       end
 
       context 'no strip' do
         let(:strip) { false }
-        specify { subject.parse('').should be_nothing }
-        specify { subject.parse('   ').should be_nothing }
+        specify { subject.parse('').should be_just('DEFAULT') }
+        specify { subject.parse('   ').should be_just('DEFAULT') }
       end
     end
 
     context 'matches' do
       subject { Lego::Value::String.new(opts.merge(matches: /^[A-Z]{3}$/)) }
 
-      specify { subject.parse(nil).should be_nothing }
+      specify { subject.parse(nil).should be_just('DEFAULT') }
       specify { subject.parse(123).should be_error("invalid string: '123'") }
 
       specify { subject.parse('abc').should be_error("does not match (/^[A-Z]{3}$/): 'abc'") }

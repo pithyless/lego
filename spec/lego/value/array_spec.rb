@@ -6,7 +6,8 @@ describe Lego::Value::Array do
 
   describe '#parse' do
     context 'nil' do
-      specify { subject.parse(nil).should be_nothing }
+      subject { Lego::Value::Array.new(String, allow_empty: false, default: ->{ 'DEFAULT' }) }
+      specify { subject.parse(nil).should be_just('DEFAULT') }
     end
 
     context 'invalid array or item' do
@@ -25,8 +26,8 @@ describe Lego::Value::Array do
     end
 
     context 'disallow empty' do
-      subject { Lego::Value::Array.new(String, allow_empty: false) }
-      specify { subject.parse([]).should be_nothing }
+      subject { Lego::Value::Array.new(String, allow_empty: false, default: ->{ 'DEFAULT' }) }
+      specify { subject.parse([]).should be_just('DEFAULT') }
     end
 
     context 'check length' do

@@ -4,8 +4,10 @@ describe Lego::Value::Boolean do
 
   describe '#parse' do
     context 'nil' do
-      specify { subject.parse(nil).should be_nothing }
-      specify { subject.parse('').should be_nothing }
+      subject { Lego::Value::Boolean.new(default: ->{ 'DEFAULT' }) }
+
+      specify { subject.parse(nil).should be_just('DEFAULT') }
+      specify { subject.parse('').should be_just('DEFAULT') }
     end
 
     context 'boolean string' do
