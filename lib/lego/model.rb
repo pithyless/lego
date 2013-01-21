@@ -2,6 +2,17 @@ require 'active_support/core_ext/hash/deep_merge'
 
 module Lego
   class Model
+    class ParseError < StandardError
+      def initialize(errors={})
+        @errors = errors
+        super(errors.inspect)
+      end
+
+      attr_reader :errors
+    end
+
+    private_class_method :new
+
     class << self
 
       def attribute(attr, type, *args)
@@ -13,78 +24,92 @@ module Lego
       end
 
       def validations
-        @_validations ||= []
+        @_validations ||= Hash.new { |h,k| h[k] = [] }
       end
 
       def attribute_names
         parsers.keys
       end
 
-      def validates(callable=nil, &block)
+      def validates(attr, callable=nil, &block)
+        attr = attr.to_sym
         if callable && callable.is_a?(Symbol)
-          validations << callable
+          validations[attr] << callable
         else
-          validations << block
-        end
-      end
-
-      def validate(msg, callable)
-        if callable.is_a?(Symbol)
-          callable_name = callable.to_sym
-          validations << ->(v) { v.method(callable_name).call ? Lego.just(v) : Lego.fail(msg) }
-        else
-          validations << ->(v) { callable.call(v) ? Lego.just(v) : Lego.fail(msg) }
+          validations[attr] << block
         end
       end
 
       def coerce(hash)
-        obj = hash.instance_of?(self) ? hash : self.new(hash)
-        res = _validate(obj)
-        res.value? ? res.value : fail(CoerceError, res.error)
+        res = parse(hash)
+        res.value? ? res.value : fail(ParseError.new(res.error))
       end
 
       def parse(hash)
-        Lego.just(self.coerce(hash))
-      rescue Lego::CoerceError => e
-        Lego.fail(e.message)
+        return Lego.just(hash) if hash.instance_of?(self)
+
+        fail ArgumentError, "attrs must be hash: '#{hash.inspect}'" unless hash.respond_to?(:key?)
+
+        result = _parse(hash)
+
+        if result.value?
+          model = new(result.value)
+          _validate(model)
+        else
+          result
+        end
       end
 
-      private
-
       def _validate(obj)
-        res = Lego.just(obj)
-        validations.each do |validation|
-          if validation.is_a?(Symbol)
-            callable_method_name = validation.to_sym
-            validation = ->(o){ o.method(callable_method_name).call }
+        attrs = {}
+        validations.each do |name, attr_validations|
+          attrs[name] = Lego.just(obj)
+          attr_validations.each do |validation|
+            if validation.is_a?(Symbol)
+              callable_method_name = validation.to_sym
+              validation = ->(o){ o.method(callable_method_name).call }
+            end
+            attrs[name] = attrs[name].next(validation)
           end
-          res = res.next(validation)
         end
-        res
+
+        if attrs.all?{ |k,v| v.value? }
+          Lego.just(obj)
+        else
+          Lego.fail(Hash[*attrs.map{ |k,v| [k, v.error] if v.error? }.compact.flatten(1)])
+        end
+      end
+
+      def _parse(data)
+        data = data.dup
+
+        attrs = {}
+
+        parsers.each do |name, parser|
+          name = name.to_sym
+          value = data.key?(name) ? data.delete(name) : data.delete(name.to_s)
+
+          attrs[name] = parser.parse(value)
+        end
+
+        fail ArgumentError, "Unknown attributes: #{data}" unless data.empty?
+
+        if attrs.all?{ |k,v| v.value? }
+          Lego.just(Hash[*attrs.map{ |k,v| [k, v.value] }.flatten(1)])
+        else
+          Lego.fail(Hash[*attrs.map{ |k,v| [k, v.error] if v.error? }.compact.flatten(1)])
+        end
       end
     end
 
     def initialize(attrs={})
-      fail ArgumentError, "attrs must be hash: '#{attrs.inspect}'" unless attrs.respond_to?(:key?)
-      attrs = attrs.dup
-      @attributes = {}.tap do |h|
-        self.class.parsers.each do |name, parser|
-          name = name.to_sym
-          value = attrs.key?(name) ? attrs.delete(name) : attrs.delete(name.to_s)
-          begin
-            h[name] = parser.coerce(value)
-          rescue Lego::CoerceError => e
-            fail ArgumentError, ":#{name} => #{e.message}"
-          end
-        end
-      end.freeze
-      fail ArgumentError, "Unknown attributes: #{attrs}" unless attrs.empty?
+      @attributes = attrs.freeze
     end
 
     attr_reader :attributes
 
     def merge(other)
-      self.class.new(as_json.deep_merge(other))
+      self.class.coerce(as_json.deep_merge(other))
     end
 
     def method_missing(name, *args, &block)

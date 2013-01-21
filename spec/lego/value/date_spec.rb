@@ -6,8 +6,10 @@ describe Lego::Value::Date do
     subject { Lego::Value::Date.new }
 
     context 'nil' do
-      specify { subject.parse(nil).should be_nothing }
-      specify { subject.parse('').should be_nothing }
+      subject { Lego::Value::Date.new(default: ->{ 'DEFAULT' }) }
+
+      specify { subject.parse(nil).should be_just('DEFAULT') }
+      specify { subject.parse('').should be_just('DEFAULT') }
     end
 
     context 'invalid date' do

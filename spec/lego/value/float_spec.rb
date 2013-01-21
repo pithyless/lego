@@ -8,8 +8,10 @@ describe Lego::Value::Float do
     let(:opts){ {} }
 
     context 'nil' do
-      specify { subject.parse(nil).should be_nothing }
-      specify { subject.parse('').should be_nothing }
+      let(:opts){ {default: ->{ 42.0 } } }
+
+      specify { subject.parse(nil).should be_just(42.0) }
+      specify { subject.parse('').should be_just(42.0) }
     end
 
     context 'invalid float' do
