@@ -15,7 +15,7 @@ describe Lego::Model do
 
   context 'Person' do
     subject do
-      Person.new(name: 'Alice', age: '10')
+      Person.coerce(name: 'Alice', age: '10')
     end
 
     it '::attributes' do
@@ -31,72 +31,72 @@ describe Lego::Model do
     end
 
     it 'raises error on unknown attribute' do
-      expect{ Person.new(name: 'Alice', age: '10', grade: 5) }.to raise_error(ArgumentError, "Unknown attributes: {:grade=>5}")
+      expect{ Person.coerce(name: 'Alice', age: '10', grade: 5) }.to raise_error(ArgumentError, "Unknown attributes: {:grade=>5}")
     end
 
     it 'fails on validation' do
-      expect{ Person.new(name: 'Alice') }.to raise_error(ArgumentError, '{:age=>"missing value"}')
-      expect{ Person.new(name: 'Alice', age: Date.today) }.to raise_error(ArgumentError, /invalid integer/)
+      expect{ Person.coerce(name: 'Alice') }.to raise_error(ArgumentError, '{:age=>"missing value"}')
+      expect{ Person.coerce(name: 'Alice', age: Date.today) }.to raise_error(ArgumentError, /invalid integer/)
     end
 
     it 'fails on non-hash initialize' do
-      expect{ Person.new(nil) }.to raise_error(ArgumentError, "attrs must be hash: 'nil'")
+      expect{ Person.coerce(nil) }.to raise_error(ArgumentError, "attrs must be hash: 'nil'")
     end
 
     it 'dupes attributes' do
       h = { name: 'Alice', age: 10 }
-      Person.new(h)
+      Person.coerce(h)
       h.should == { name: 'Alice', age: 10 }
     end
   end
 
   context 'equality' do
     it '#==' do
-      Person.new(name: 'Alice', age: 10).should == Person.new(name: 'Alice', age: '10')
-      Person.new(name: 'Alice', age: 10).should_not == Person.new(name: 'Bob', age: '10')
-      Person.new(name: 'Alice', age: 10).should_not == Person.new(name: 'Alice', age: '12')
+      Person.coerce(name: 'Alice', age: 10).should == Person.coerce(name: 'Alice', age: '10')
+      Person.coerce(name: 'Alice', age: 10).should_not == Person.coerce(name: 'Bob', age: '10')
+      Person.coerce(name: 'Alice', age: 10).should_not == Person.coerce(name: 'Alice', age: '12')
     end
 
     it '#eql?' do
-      Person.new(name: 'Alice', age: 10).should eql Person.new(name: 'Alice', age: '10')
-      Person.new(name: 'Alice', age: 10).should_not eql Person.new(name: 'Bob', age: '10')
-      Person.new(name: 'Alice', age: 10).should_not eql Person.new(name: 'Alice', age: '12')
+      Person.coerce(name: 'Alice', age: 10).should eql Person.coerce(name: 'Alice', age: '10')
+      Person.coerce(name: 'Alice', age: 10).should_not eql Person.coerce(name: 'Bob', age: '10')
+      Person.coerce(name: 'Alice', age: 10).should_not eql Person.coerce(name: 'Alice', age: '12')
     end
 
     it '#hash' do
-      Person.new(name: 'Alice', age: 10).hash.should == Person.new(name: 'Alice', age: '10').hash
-      Person.new(name: 'Alice', age: 10).hash.should_not == Person.new(name: 'Bob', age: '10').hash
-      Person.new(name: 'Alice', age: 10).hash.should_not == Person.new(name: 'Alice', age: '12').hash
+      Person.coerce(name: 'Alice', age: 10).hash.should == Person.coerce(name: 'Alice', age: '10').hash
+      Person.coerce(name: 'Alice', age: 10).hash.should_not == Person.coerce(name: 'Bob', age: '10').hash
+      Person.coerce(name: 'Alice', age: 10).hash.should_not == Person.coerce(name: 'Alice', age: '12').hash
     end
   end
 
   context 'Family' do
     it 'creates recursively from hash' do
-      family = Family.new(last_name: 'Kowalski', father: { name: 'Bob', age: '55' })
+      family = Family.coerce(last_name: 'Kowalski', father: { name: 'Bob', age: '55' })
       family.should be_instance_of(Family)
       family.last_name.should == 'Kowalski'
-      family.father.should == Person.new(name: 'Bob', age: '55')
+      family.father.should == Person.coerce(name: 'Bob', age: '55')
     end
 
     it 'creates from partial hash' do
-      family = Family.new(last_name: 'Kowalski', father: Person.new(name: 'Bob', age: '55'))
+      family = Family.coerce(last_name: 'Kowalski', father: Person.coerce(name: 'Bob', age: '55'))
       family.should be_instance_of(Family)
       family.last_name.should == 'Kowalski'
-      family.father.should == Person.new(name: 'Bob', age: '55')
+      family.father.should == Person.coerce(name: 'Bob', age: '55')
     end
 
     it 'initializes from string keys' do
-      family = Family.new('last_name' => 'Kowalski', 'father' => Person.new('name' => 'Bob', 'age' => '55'))
+      family = Family.coerce('last_name' => 'Kowalski', 'father' => Person.coerce('name' => 'Bob', 'age' => '55'))
       family.should be_instance_of(Family)
       family.last_name.should == 'Kowalski'
-      family.father.should == Person.new(name: 'Bob', age: '55')
+      family.father.should == Person.coerce(name: 'Bob', age: '55')
     end
   end
 
 
   describe '#as_json' do
     it 'serializes Family' do
-      family = Family.new(last_name: 'Kowalski', father: { name: 'Bob', age: '55' })
+      family = Family.coerce(last_name: 'Kowalski', father: { name: 'Bob', age: '55' })
       family.as_json.should == {
         :last_name => "Kowalski",
         :father => {
@@ -108,7 +108,7 @@ describe Lego::Model do
   end
 
   describe '#merge' do
-    let(:one) { Family.new(last_name: 'Kowalski', father: { name: 'Bob', age: '55' }) }
+    let(:one) { Family.coerce(last_name: 'Kowalski', father: { name: 'Bob', age: '55' }) }
 
     it 'returns new object' do
       two = one.merge({})
@@ -119,8 +119,8 @@ describe Lego::Model do
     it 'merges changes' do
       two = one.merge(last_name: 'Tesla', father: { name: 'Nikola' })
 
-      one.should == Family.new(last_name: 'Kowalski', father: { name: 'Bob', age: '55' })
-      two.should == Family.new(last_name: 'Tesla', father: { name: 'Nikola', age: '55' })
+      one.should == Family.coerce(last_name: 'Kowalski', father: { name: 'Bob', age: '55' })
+      two.should == Family.coerce(last_name: 'Tesla', father: { name: 'Nikola', age: '55' })
     end
   end
 

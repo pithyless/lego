@@ -2,6 +2,8 @@ require 'active_support/core_ext/hash/deep_merge'
 
 module Lego
   class Model
+    private_class_method :new
+
     class << self
 
       def attribute(attr, type, *args)
@@ -38,7 +40,7 @@ module Lego
       end
 
       def coerce(hash)
-        hash.instance_of?(self) ? hash : self.new(hash)
+        hash.instance_of?(self) ? hash : new(hash)
       end
 
       def parse(hash)
@@ -98,7 +100,7 @@ module Lego
     attr_reader :attributes
 
     def merge(other)
-      self.class.new(as_json.deep_merge(other))
+      self.class.coerce(as_json.deep_merge(other))
     end
 
     def method_missing(name, *args, &block)
