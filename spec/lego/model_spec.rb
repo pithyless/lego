@@ -1,5 +1,6 @@
 require 'spec_helper'
 require 'date'
+require 'set'
 
 describe Lego::Model do
 
@@ -195,6 +196,39 @@ describe Lego::Model do
       klass.parse(start: today.to_s, stop: today.to_s).should be_error(start: 'must start before end')
       klass.parse(start: today.to_s, stop: (today + 2).to_s).should be_error(start: 'at least 3 days after')
       klass.parse(start: today.to_s, stop: (today + 3).to_s).should be_value
+    end
+
+    it 'validates custom requirements for groups' do
+      klass = Class.new(Lego::Model) do
+        attribute :people, Array, Person
+
+        validates :people, :check_unique_names
+
+        def check_unique_names
+          names, errors = Set.new, []
+
+          people.map do |person|
+            if names.include?(person.name)
+              errors << {name: 'must be unique'}
+            else
+              names << person.name
+              errors << nil
+            end
+          end
+
+          if errors.compact.empty?
+            Lego.just(self)
+          else
+            Lego.fail(errors)
+          end
+        end
+      end
+
+      alice  = Person.coerce(name: 'Alice', age: '10')
+      alice2 = Person.coerce(name: 'Alice', age: '50')
+      bob    = Person.coerce(name: 'Bob', age: '50')
+      klass.parse(people: [alice, alice2]).should be_error(people: [nil, {name: 'must be unique'}])
+      klass.parse(people: [alice, bob]).should be_value
     end
   end
 
