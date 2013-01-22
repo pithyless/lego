@@ -13,7 +13,7 @@ describe Lego::Value::Array do
     context 'invalid array or item' do
       specify { subject.parse('').should be_error("invalid array: ''") }
       specify { subject.parse('2012-02').should be_error("invalid array: '2012-02'") }
-      specify { subject.parse(['one', 123, 'two']).should be_error("invalid string: '123'") }
+      specify { subject.parse(['one', 123, 'two']).should be_error([nil, "invalid string: '123'", nil]) }
     end
 
     it 'parses array' do
@@ -63,7 +63,7 @@ describe Lego::Value::Array do
 
     context 'failure' do
       it 'raises error' do
-        expect{ subject.coerce([123]) }.to raise_error(Lego::CoerceError, "invalid string: '123'")
+        expect{ subject.coerce([123]) }.to raise_error(Lego::CoerceError, ["invalid string: '123'"].inspect)
       end
     end
 

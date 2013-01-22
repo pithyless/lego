@@ -18,15 +18,23 @@ module Lego::Value
     private
 
     def parse_items(items)
+      errors = []
+
       items = items.map do |item|
         new_item = @_item_parser.parse(item)
         if new_item.value?
+          errors << nil
           new_item.value
         else
-          return new_item
+          errors << new_item.error
         end
       end
-      Lego.just(items)
+
+      if errors.compact.empty?
+        Lego.just(items)
+      else
+        Lego.fail(errors)
+      end
     end
 
     def check_length?

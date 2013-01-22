@@ -19,16 +19,24 @@ module Lego::Value
     private
 
     def parse_items(set)
+      errors = []
+
       new_set = ::Set.new
       set.each do |item|
         new_item = @_item_parser.parse(item)
         if new_item.value?
+          errors << nil
           new_set << new_item.value
         else
-          return new_item
+          errors << new_item.error
         end
       end
-      Lego.just(new_set)
+
+      if errors.compact.empty?
+        Lego.just(new_set)
+      else
+        Lego.fail(errors)
+      end
     end
 
     def allow_empty?

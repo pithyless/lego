@@ -16,7 +16,7 @@ describe Lego::Value::Set do
     context 'invalid set or item' do
       specify { subject.parse('').should be_error("invalid set: ''") }
       specify { subject.parse('2012-02').should be_error("invalid set: '2012-02'") }
-      specify { subject.parse(['one', 123, 'two']).should be_error("invalid string: '123'") }
+      specify { subject.parse(['one', 123, 'two']).should be_error([nil, "invalid string: '123'", nil]) }
     end
 
     it 'parses array' do
@@ -65,7 +65,7 @@ describe Lego::Value::Set do
 
     context 'failure' do
       it 'raises error' do
-        expect{ subject.coerce([123]) }.to raise_error(Lego::CoerceError, "invalid string: '123'")
+        expect{ subject.coerce([123]) }.to raise_error(Lego::CoerceError, ["invalid string: '123'"].inspect)
       end
     end
 
