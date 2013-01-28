@@ -74,6 +74,17 @@ describe Lego::Value::String do
       its(:allow_blank?){ should == false }
       its(:strip?){ should == true }
     end
+
+    context 'allow' do
+      subject { Lego::Value::String.new(allow: %w{mon tue wed thu fri sat sun}) }
+
+      specify { subject.parse('mon').should be_just('mon') }
+      specify { subject.parse('sat').should be_just('sat') }
+
+      specify { subject.parse('Mon').should be_error("not allowed: 'Mon'") }
+      specify { subject.parse('foo').should be_error("not allowed: 'foo'") }
+    end
+
   end
 
 
