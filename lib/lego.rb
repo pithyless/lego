@@ -6,6 +6,7 @@ module Lego
   require_relative 'lego/either'
   require_relative 'lego/value'
   require_relative 'lego/model'
+  require_relative 'lego/validator'
 
   def self.value_parser(item, *args)
     if (Lego::Value.const_defined?(item.to_s, false) rescue false)

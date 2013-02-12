@@ -3,7 +3,7 @@ module Lego::Value
 
     def parsers
       [
-       ->(v) { v.respond_to?(:to_str) ? Lego.just(v.to_str) : Lego.fail("invalid string: '#{v}'") },
+       ->(v) { v.respond_to?(:to_str) ? Lego.just(v.to_str) : Lego.fail(Lego::Error.new(:not_a_string, v)) },
        ->(v) { strip? ? Lego.just(v.strip) : Lego.just(v) },
        ->(v) { (not allow_blank? and v.blank?) ? Lego.none : Lego.just(v) },
        ->(v) { check_regexp? ? assert_regexp(v) : Lego.just(v) },
@@ -34,7 +34,7 @@ module Lego::Value
       if regex =~ v
         Lego.just(v)
       else
-        Lego.fail("does not match (#{regex.inspect}): '#{v}'")
+        Lego.fail(Lego::RegexpValidationError.new(v))
       end
     end
 
@@ -43,7 +43,7 @@ module Lego::Value
       if whitelist.include?(v)
         Lego.just(v)
       else
-        Lego.fail("not allowed: '#{v}'")
+        Lego.fail(Lego::InclusionValidationError.new(v))
       end
     end
 

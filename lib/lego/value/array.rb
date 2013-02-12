@@ -23,7 +23,7 @@ module Lego::Value
       items = items.map do |item|
         new_item = @_item_parser.parse(item)
         if new_item.value?
-          errors << nil
+          errors << new_item.value
           new_item.value
         else
           errors << new_item.error

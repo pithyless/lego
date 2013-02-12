@@ -17,7 +17,7 @@ module Lego::Value
       if @opts[:default]
         Lego.just(@opts[:default].call)
       else
-        Lego.fail('missing value')
+        Lego.fail(Lego::Error.new(:blank, nil))
       end
     end
 

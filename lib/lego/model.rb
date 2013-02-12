@@ -84,20 +84,26 @@ module Lego
         data = data.dup
 
         attrs = {}
+        errors = Errors.new
 
         parsers.each do |name, parser|
           name = name.to_sym
           value = data.key?(name) ? data.delete(name) : data.delete(name.to_s)
 
-          attrs[name] = parser.parse(value)
+          res = parser.parse(value)
+          if res.value?
+            attrs[name] = res.value
+          else
+            errors.add(name, res.error)
+          end
         end
 
         fail ArgumentError, "Unknown attributes: #{data}" unless data.empty?
 
-        if attrs.all?{ |k,v| v.value? }
-          Lego.just(Hash[*attrs.map{ |k,v| [k, v.value] }.flatten(1)])
+        if errors.any?
+          Lego.fail(errors)
         else
-          Lego.fail(Hash[*attrs.map{ |k,v| [k, v.error] if v.error? }.compact.flatten(1)])
+          Lego.just(attrs)
         end
       end
     end
