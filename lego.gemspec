@@ -15,6 +15,7 @@ Gem::Specification.new do |gem|
   gem.version       = '0.0.5'
 
   gem.add_dependency 'activesupport'
+  gem.add_dependency 'equalizer'
 
   gem.add_development_dependency "rake"
   gem.add_development_dependency "rspec"
