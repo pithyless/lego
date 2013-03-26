@@ -22,7 +22,11 @@ module Lego
     attr_reader :value
 
     def name
-      @name ||= self.class.name.split('::').last
+      @name ||= self.class.name.split('::').last.underscore
+    end
+
+    def error_messages
+      [ message ]
     end
 
     abstract_method :message
@@ -36,9 +40,49 @@ module Lego
       end
 
       attr_reader :type
+
+      def message
+        "cannot be coerced to #{type}"
+      end
+    end
+
+    class KeyCollection < self
+      def error_messages
+        value.each_with_object({}) do |(k,v), h|
+          h[k] = v.error.error_messages if v.error?
+        end
+      end
+    end
+
+    class Collection < self
     end
 
     class Blank < self
+      def message
+        "cannot be blank"
+      end
+    end
+  end
+
+
+  class Model
+    class << self
+      def key(name, parser)
+        parser = parser.new if parser.kind_of?(Class)
+        _schema[name.to_sym] = parser
+      end
+
+      def parser
+        @parser ||= Lego::Parse::Schema.new(_schema)
+      end
+
+      def _schema
+        @_schema ||= {}
+      end
+
+      def valid?(params)
+        parser.call(params).value?
+      end
     end
   end
 
@@ -80,6 +124,40 @@ module Lego
       end
     end
 
+    class Array < self
+      def initialize(item_parser, opts={})
+        @item_parser = item_parser
+      end
+
+      def parsers
+        [
+          ->(v) { parse_array(v) },
+          ->(v) { parse_items(v) }
+        ]
+      end
+
+      attr_reader :item_parser
+
+      def parse_array(v)
+        Success(v.to_ary)
+      rescue NoMethodError
+        Failure(Violation::Coercion.new(:array, v))
+      end
+
+      def parse_items(items)
+        result = items.map do |item|
+          item_parser.call(item)
+        end
+
+        if result.all?(&:value?)
+          Success(result.map(&:value))
+        else
+          Failure(Violation::Collection.new(result))
+        end
+      end
+    end
+
+
     class Schema < self
       def initialize(schema)
         @schema = schema.symbolize_keys
@@ -89,15 +167,17 @@ module Lego
 
       def parsers
         [
-          ->(v) { hashlike?(v) ? Success(v) : Failure(Violation::Coercion.new(:hash, v)) },
+          ->(v) { parse_hash(v) },
           ->(v) { parse_each(v) }
         ]
       end
 
       private
 
-      def hashlike?(v)
-        v.respond_to?(:key?)
+      def parse_hash(v)
+        Success(v.to_h)
+      rescue NoMethodError
+        Failure(Violation::Coercion.new(:hash, v))
       end
 
       def parse_each(data)
@@ -111,7 +191,7 @@ module Lego
             h[k] = v.value
           end)
         else
-          Failure(result)
+          Failure(Violation::KeyCollection.new(result))
         end
       end
     end
@@ -134,6 +214,8 @@ module Lego
   end
 
   class Success < Either
+    include Equalizer.new(:value)
+
     def initialize(value)
       @value = value
     end
@@ -151,6 +233,8 @@ module Lego
   end
 
   class Failure < Either
+    include Equalizer.new(:error)
+
     def initialize(error)
       @error = error
     end
