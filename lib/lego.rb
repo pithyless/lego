@@ -15,8 +15,9 @@ module Lego
     include AbstractType
     include Equalizer.new(:name, :value)
 
-    def initialize(value)
+    def initialize(value, message=nil)
       @value ||= value
+      @message ||= message
     end
 
     attr_reader :value
@@ -29,7 +30,9 @@ module Lego
       [ message ]
     end
 
-    abstract_method :message
+    def message
+      @message || 'invalid'
+    end
 
     class Coercion < self
       include Equalizer.new(:name, :value, :type)
@@ -52,6 +55,9 @@ module Lego
           h[k] = v.error.error_messages if v.error?
         end
       end
+    end
+
+    class Invalid < self
     end
 
     class Collection < self
@@ -93,6 +99,12 @@ module Lego
 
     abstract_method :parsers
 
+    def initialize(opts={})
+      @opts = opts.symbolize_keys
+    end
+
+    attr_reader :opts
+
     def call(value)
       result = Success(value)
       parsers.each { |parser| result = result.bind(parser) }
@@ -107,6 +119,30 @@ module Lego
         ]
       end
     end
+
+    class Date < self
+      def parsers
+        [
+          ->(v) { v.blank? ? Failure(Violation::Blank.new(v)) : Success(v) },
+          ->(v) { parse_date(v) }
+        ]
+      end
+
+      def strptime
+        opts[:strptime] || '%Y-%m-%d'
+      end
+
+      def parse_date(v)
+        if v.is_a?(String)
+          Success(Date.strptime(v, strptime))
+        elsif v.respond_to?(:to_date)
+          Success(v.to_date)
+        else
+          Failure(Violation::Coercion.new(:date, v))
+        end
+      end
+    end
+
 
     class Integer < self
       def parsers
@@ -159,16 +195,19 @@ module Lego
 
 
     class Schema < self
-      def initialize(schema)
+      def initialize(schema, record_validators=[])
         @schema = schema.symbolize_keys
+        @record_validators = record_validators
       end
 
-      attr_reader :schema
+      attr_reader :schema, :record_validators
 
       def parsers
         [
           ->(v) { parse_hash(v) },
-          ->(v) { parse_each(v) }
+          ->(v) { parse_each_item(v) },
+          ->(v) { check_record_validators(v) },
+          ->(v) { flatten_success(v) },
         ]
       end
 
@@ -180,12 +219,24 @@ module Lego
         Failure(Violation::Coercion.new(:hash, v))
       end
 
-      def parse_each(data)
+      def parse_each_item(data)
         result = {}
         schema.each do |name, parser|
           result[name] = parser.call(data[name])
         end
+        result.values.all?(&:value?) ? Success(result) : Failure(Violation::KeyCollection.new(result))
+      end
 
+      def check_record_validators(data)
+        result = data.dup
+        record_validators.each do |validator|
+          validator.call(result)
+          return Failure(Violation::KeyCollection.new(result)) unless result.values.all?(&:value?)
+        end
+        Success(result)
+      end
+
+      def flatten_success(result)
         if result.values.all?(&:value?)
           Success(result.each_with_object({}) do |(k,v), h|
             h[k] = v.value
@@ -194,6 +245,7 @@ module Lego
           Failure(Violation::KeyCollection.new(result))
         end
       end
+
     end
   end
 
