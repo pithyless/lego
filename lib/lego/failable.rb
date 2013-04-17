@@ -38,7 +38,7 @@ module Lego
     def error?; true; end
 
     def fetch(&block)
-      if block_defined?
+      if block_given?
         block.call(error)
       else
         fail "Could not fetch failure: #{self.inspect}"
