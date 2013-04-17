@@ -4,8 +4,8 @@ source 'https://rubygems.org'
 gemspec
 
 group :development, :test do
-  gem 'guard-rspec'
-  gem 'fuubar'
+  gem 'guard-minitest'
+  gem 'turn'
 
   gem 'growl',      :require => RUBY_PLATFORM.include?('darwin') && 'growl'
   gem 'rb-fsevent', :require => RUBY_PLATFORM.include?('darwin') && 'rb-fsevent'

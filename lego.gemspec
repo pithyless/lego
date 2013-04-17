@@ -14,11 +14,11 @@ Gem::Specification.new do |gem|
   gem.require_paths = ["lib"]
   gem.version       = '0.0.5'
 
-  gem.add_dependency 'activesupport'
-  gem.add_dependency 'equalizer'
+  gem.add_dependency 'activesupport', '~> 3.2.0'
+  gem.add_dependency 'equalizer', '~> 0.0.5'
   gem.add_dependency 'abstract_type', '~> 0.0.4'
-  gem.add_dependency 'to_h', '>= 0.0.2'
+  gem.add_dependency 'to_h', '~> 0.0.2'
 
-  gem.add_development_dependency "rake"
-  gem.add_development_dependency "rspec"
+  gem.add_development_dependency 'rake'
+  gem.add_development_dependency 'minitest', '~> 4.7.1'
 end

@@ -1,8 +1,5 @@
-guard 'rspec' do
-  watch(%r{^spec/.+_spec\.rb$})
-  watch(%r{^lib/(.+)\.rb$})     { |m| "spec/#{m[1]}_spec.rb" }
-
-  watch(%r{^lib/lego.rb$})     { |m| "spec" }
-
-  watch('spec/spec_helper.rb')  { "spec" }
+guard 'minitest', all_on_start: true do
+  watch(%r|^spec/(.*)_spec\.rb|)
+  watch(%r|^lib/(.*)([^/]+)\.rb|)     { |m| "spec/#{m[1]}#{m[2]}_spec.rb" }
+  watch(%r|^spec/spec_helper\.rb|)    { "spec" }
 end
