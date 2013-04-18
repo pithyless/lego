@@ -65,6 +65,14 @@ module Lego
 
   class SchemaSuccess
     include Success
+
+    def bind(callable=nil, &block)
+      callable ||= block
+      value.each do |key, val|
+        key
+      end
+      callable.call(value).tap{ |v| verify_value(v) }
+    end
   end
 
   class SchemaFailure

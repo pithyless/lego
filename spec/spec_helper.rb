@@ -21,5 +21,19 @@ module MiniTest::Spec::SharedExamples
   end
 end
 
-
 Object.class_eval { include(MiniTest::Spec::SharedExamples) }
+
+module MiniTest::Assertions
+  def assert_equals_value_success(value, result)
+    assert result.must_be_instance_of(Lego::ValueSuccess)
+    assert_equal result, Lego::ValueSuccess.new(value)
+  end
+
+  def assert_equals_value_failure(error, result)
+    assert result.must_be_instance_of(Lego::ValueFailure)
+    assert_equal result, Lego::ValueFailure.new(error)
+  end
+end
+
+Object.infect_an_assertion :assert_equals_value_success, :must_equal_value_success
+Object.infect_an_assertion :assert_equals_value_failure, :must_equal_value_failure
