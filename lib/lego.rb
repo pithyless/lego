@@ -4,6 +4,7 @@ module Lego
   require_relative 'lego/left'
   require_relative 'lego/right'
   require_relative 'lego/runner'
+  require_relative 'lego/value'
 
   def self.left(value)
     Left.new(value)
