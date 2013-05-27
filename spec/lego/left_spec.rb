@@ -16,4 +16,8 @@ describe Lego::Left do
     expect{ subject.right }.to raise_error(NoMethodError)
   end
 
+  it 'compares itself' do
+    subject.should == Lego::Left.new(value)
+  end
+
 end

@@ -1,19 +1,19 @@
 module Lego
   class Right
-    def initialize(value)
-      @value = value
+    include Equalizer.new(:right)
+
+    def initialize(right)
+      @right = right
     end
 
-    def right
-      @value
+    attr_reader :right
+
+    def left?
+      false
     end
 
     def right?
       true
-    end
-
-    def left?
-      false
     end
   end
 end

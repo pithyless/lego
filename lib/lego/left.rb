@@ -1,12 +1,12 @@
 module Lego
   class Left
-    def initialize(value)
-      @value = value
+    include Equalizer.new(:left)
+
+    def initialize(left)
+      @left = left
     end
 
-    def left
-      @value
-    end
+    attr_reader :left
 
     def left?
       true
