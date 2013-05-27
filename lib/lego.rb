@@ -3,12 +3,19 @@ require 'equalizer'
 module Lego
   require_relative 'lego/left'
   require_relative 'lego/right'
+  require_relative 'lego/runner'
 
   def self.left(value)
-    ::Lego::Left.new(value)
+    Left.new(value)
   end
 
   def self.right(value)
-    ::Lego::Right.new(value)
+    Right.new(value)
+  end
+
+  def self.right_or_first_left(&block)
+    Runner.new.
+      left { |error| Lego.left(error) }.
+      right{ |value| Lego.right(block.call(value)) }
   end
 end
