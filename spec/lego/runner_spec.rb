@@ -62,8 +62,10 @@ describe Lego::Runner do
     let(:right) { Lego.right(right_value) }
 
     let(:runner) do
-      Lego.right_or_first_left do |value|
-        value + 42
+      Lego::Runner::Either.new.bind do |value|
+        value + 10
+      end.bind do |value|
+        value + 32
       end
     end
 

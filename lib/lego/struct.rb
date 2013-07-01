@@ -5,6 +5,7 @@ module Lego
         memory = {}
         keys.each do |attr|
           memory[attr] = opts[attr]
+          # TODO: fail if opts includes unkown keys
         end
         @__lego_memory = IceNine.deep_freeze(memory)
       end
