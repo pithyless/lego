@@ -3,11 +3,11 @@ require 'spec_helper'
 describe Lego do
   let(:value) { double }
 
-  it '::left' do
-    Lego.left(value).should == Lego::Left.new(value)
+  it '::pass' do
+    Lego.pass(value).should == Lego::Success.new(value)
   end
 
-  it '::right' do
-    Lego.right(value).should == Lego::Right.new(value)
+  it '::fail' do
+    Lego.fail(value).should == Lego::Failure.new(value)
   end
 end

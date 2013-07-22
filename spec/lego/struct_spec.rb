@@ -3,9 +3,7 @@ require 'spec_helper'
 describe Lego::Struct do
 
   let(:klass) do
-    Class.new.tap do |obj|
-      obj.send(:include, Lego::Struct.new(:name, :age))
-    end
+    Lego::Struct.new(:name, :age)
   end
 
   subject { klass.new(name: 'Bob', age: 30) }
@@ -20,6 +18,15 @@ describe Lego::Struct do
 
     its(:name) { should == nil }
     its(:age)  { should == nil }
+  end
+
+  it '#to_h' do
+    obj = klass.new(name: 'Bob', age: 30)
+    obj.to_h.should == { name: 'Bob', age: 30 }
+  end
+
+  it '::attributes' do
+    klass.attributes.should == [:age, :name]
   end
 
   it 'compares itself' do
