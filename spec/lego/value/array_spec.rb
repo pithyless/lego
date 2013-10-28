@@ -37,6 +37,11 @@ describe Lego::Value::Array do
       specify { subject.parse([1, 2, 3]).should be_error("length not 2: '[1, 2, 3]'") }
       specify { subject.parse([42, 24]).should be_just([42, 24]) }
     end
+
+    context 'passess children_opts to children parser' do
+      subject { Lego::Value::Array.new(String, children_opts: { allow_blank: true, default: -> { 'default' }} )}
+      specify { subject.parse(["abc", "", nil]).should be_just(["abc", "", "default"])}
+    end
   end
 
   describe '#coerce' do
