@@ -2,7 +2,7 @@ module Lego::Value
   class Array < Base
 
     def initialize(type, opts={})
-      @_item_parser = Lego.value_parser(type)
+      @_item_parser = Lego.value_parser(type, opts[:children_opts] || {} )
       super(opts)
     end
 
